@@ -35,7 +35,13 @@ MPD_LIBS="$APP/engine/libs:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$APP/bin/libs:/usr/lib/compat:$LD_LIBRARY_PATH"
 # Diagnostic : tous les programmes qui peuvent jouer du son au moment du lancement.
 say "lecteurs en route :"
-ps w 2>/dev/null | grep -iE "mpd|gmu|mpv|ffplay|aplay|mplayer|rockbox|love|lafleur|librespot|songo|pw-play" | grep -v grep
+for d in /proc/[0-9]*; do
+  cmd=$(tr '\0' ' ' < "$d/cmdline" 2>/dev/null)
+  case "$cmd" in *mpd*|*gmu*|*mpv*|*ffplay*|*aplay*|*mplayer*|*rockbox*|*love*|*lafleur*|*librespot*|*songo*|*pw-play*|*retroarch*)
+    echo "  pid ${d#/proc/} : $cmd" ;;
+  esac
+done
+say "pid MPD enregistré : $(cat "$STATE/pid" 2>/dev/null)"
 # Correspondance des boutons de la console pour SDL, générée comme le fait PortMaster.
 PADDB=/tmp/lafleur-gamecontrollerdb.txt
 if [ -x /storage/.config/PortMaster/mapper.txt ]; then
