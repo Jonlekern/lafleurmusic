@@ -57,7 +57,7 @@ return function()
     local hints = {
       { app.t("shuffle") .. " (Y)", st.random == "1" },
       { app.t("repeat") .. (mode ~= "off" and (" : " .. app.t("repeat_" .. mode)) or "") .. " (X)", mode ~= "off" },
-      { "START", false, icon = true }, -- ⏯ dessiné (absent de la police Inter)
+      { "START", st.state == "play", icon = true }, -- ⏯ dessiné (absent de la police Inter), rose pendant la lecture
     }
     local hx, hy = x, L.hints_y
     for i, h in ipairs(hints) do
