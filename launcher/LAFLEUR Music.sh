@@ -1,0 +1,56 @@
+#!/bin/bash
+# LAFLEUR Music — lanceur affiché dans le menu Music de ROCKNIX (/storage/.config/gmu/playlists/).
+# Démarre le moteur MPD et le gardien du clapet s'ils ne tournent pas, puis l'interface.
+# À la sortie : arrière-plan OFF → arrêt du gardien (écran rallumé) et de MPD ; ON → tout continue.
+# LÖVE : binaire aarch64 du port PortMaster « Spotify Connect » (ELF autonome + bin/libs),
+# copié sous deux noms pour que le raccourci de fermeture de ROCKNIX (set_kill) ne vise que l'interface.
+
+. /etc/profile
+
+APP=/storage/roms/lafleur-music
+if [ ! -d "$APP" ]; then
+  echo "$(date) $APP absent (carte TF2 retirée ?)" >> /storage/.config/gmu/lafleur-missing.log
+  exit 0
+fi
+
+STATE="$APP/engine/state"
+LOG="$APP/log.txt"
+BL=/sys/class/backlight/backlight/bl_power
+mkdir -p "$STATE/playlists" "$APP/conf" "$APP/cache/covers"
+: > "$LOG"
+exec >> "$LOG" 2>&1
+say() { echo "$(date '+%H:%M:%S') [launcher] $*"; }
+alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null; }
+
+export LD_LIBRARY_PATH="$APP/engine/libs:$APP/bin/libs:$LD_LIBRARY_PATH"
+export XDG_DATA_HOME="$APP/conf"
+export LAFLEUR_APPDIR="$APP"
+
+if alive "$STATE/pid"; then
+  say "MPD déjà en route"
+elif "$APP/engine/mpd" "$APP/engine/mpd.conf"; then
+  say "MPD démarré"
+else
+  say "MPD n'a pas démarré"
+fi
+
+if alive "$STATE/lidwatch.pid"; then
+  say "gardien déjà en route"
+else
+  (cd "$APP/lidwatch" && exec "$APP/bin/lafleur-lid" .) &
+  echo $! > "$STATE/lidwatch.pid"
+  say "gardien démarré"
+fi
+
+set_kill set "lafleur-ui"
+cd "$APP/ui" && "$APP/bin/lafleur-ui" .
+say "interface terminée (code $?)"
+
+if [ "$(cat "$STATE/background" 2>/dev/null)" != "on" ]; then
+  alive "$STATE/lidwatch.pid" && kill "$(cat "$STATE/lidwatch.pid")"
+  rm -f "$STATE/lidwatch.pid"
+  echo 0 > "$BL"
+  "$APP/engine/mpd" --kill "$APP/engine/mpd.conf" && say "MPD arrêté (arrière-plan OFF)"
+else
+  say "arrière-plan ON : la musique continue"
+fi
