@@ -210,9 +210,17 @@ function love.gamepadaxis(_, axis, value)
   end
 end
 
+-- Relue toutes les 5 s ; chaque changement de pourcentage ou d'état (Charging, Discharging…) va au journal.
+local last_battery_log
 local function read_battery()
   local v = read_file(BATTERY)
   app.battery = v and tonumber(v:match("%d+")) or nil
+  local status = (read_file(BATTERY:gsub("capacity$", "status")) or "?"):match("%S+") or "?"
+  local line = tostring(app.battery) .. "% " .. status
+  if line ~= last_battery_log then
+    last_battery_log = line
+    app.log("batterie " .. line)
+  end
 end
 
 function love.load()
@@ -256,7 +264,7 @@ function love.update(dt)
   end
   battery_timer = battery_timer - dt
   if battery_timer <= 0 then
-    battery_timer = 30
+    battery_timer = 5
     read_battery()
   end
   require("covers").update()
