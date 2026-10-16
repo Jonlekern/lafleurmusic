@@ -2,7 +2,7 @@
 -- Aléatoire et répéter sont gardés par MPD lui-même (state_file).
 local S = {}
 
-S.DEFAULTS = { background_default = "on" }
+S.DEFAULTS = { background_default = "off" }
 
 local function read_file(path)
   local f = io.open(path, "r")
@@ -41,8 +41,8 @@ end
 
 function S.read_background(state_dir)
   local text = read_file(state_dir .. "/background")
-  if text and text:match("^off") then return "off" end
-  return "on"
+  if text and text:match("^on") then return "on" end
+  return "off"
 end
 
 function S.write_background(state_dir, value)
