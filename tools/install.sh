@@ -6,19 +6,24 @@ cd "$(dirname "$0")/.."
 
 HOST="${RGSP_HOST:-192.168.1.138}"
 MNT="${TMPDIR:-/tmp}/lafleur-rgsp"
-mkdir -p "$MNT/roms" "$MNT/config"
-mount_if_needed() { # partage dossier
-  if ! mount | grep -q " $2 "; then mount_smbfs -N "//guest@$HOST/$1" "$2"; fi
+# Renvoie le point de montage du partage, en le montant si besoin (macOS refuse de le monter deux fois).
+share() { # nom
+  local existing
+  existing=$(mount | sed -n "s#^//[^@]*@$HOST/$1 on \(.*\) (smbfs.*#\1#p" | head -1)
+  if [ -n "$existing" ]; then echo "$existing"; return; fi
+  mkdir -p "$MNT/$1"
+  mount_smbfs -N "//guest@$HOST/$1" "$MNT/$1"
+  echo "$MNT/$1"
 }
-mount_if_needed games-roms "$MNT/roms"
-mount_if_needed config "$MNT/config"
+ROMS=$(share games-roms)
+CONFIG=$(share config)
 
 export COPYFILE_DISABLE=1
-DEST="$MNT/roms/lafleur-music"
+DEST="$ROMS/lafleur-music"
 mkdir -p "$DEST"
 rsync -rt --exclude='._*' --exclude='.DS_Store' build/lafleur-music/ "$DEST/"
-cp "build/lafleur-music/LAFLEUR Music.sh" "$MNT/config/gmu/playlists/LAFLEUR Music.sh"
-find "$DEST" "$MNT/config/gmu/playlists" -name '._*' -delete
+cp "build/lafleur-music/LAFLEUR Music.sh" "$CONFIG/gmu/playlists/LAFLEUR Music.sh"
+find "$DEST" "$CONFIG/gmu/playlists" -name '._*' -delete
 
 diff -rq -x state -x cache -x conf -x log.txt -x settings.txt build/lafleur-music "$DEST" && echo "installé, copie identique"
-cmp "build/lafleur-music/LAFLEUR Music.sh" "$MNT/config/gmu/playlists/LAFLEUR Music.sh" && echo "lanceur en place"
+cmp "build/lafleur-music/LAFLEUR Music.sh" "$CONFIG/gmu/playlists/LAFLEUR Music.sh" && echo "lanceur en place"
