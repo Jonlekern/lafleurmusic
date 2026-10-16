@@ -1,8 +1,11 @@
 """Génère ui/assets/ depuis les logos LAFLEURSTUDIO (fleur), le logo texte LAFLEURMUSIC (Distancia Heavy) et les polices du thème Elementerial.
 
-Usage : <venv>/bin/python -I tools/make-assets.py   (cairosvg, Pillow ; DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib)
+Usage : LAFLEUR_LOGOS=<dossier des logos SVG> LAFLEUR_WORDMARK_FONT=<police du logo texte> \
+        LAFLEUR_INTER=<dossier des polices Inter> python -I tools/make-assets.py
+(cairosvg, Pillow ; sur macOS : DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib). Les images générées sont déjà dans ui/assets.
 """
 import io
+import os
 import shutil
 from pathlib import Path
 
@@ -10,11 +13,11 @@ import cairosvg
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
-LOGOS = Path("/Users/jkern/Claude/Logos LAFLEURSTUDIO")
-FONTS = Path.home() / "Downloads/es-theme/extrait/es-theme-elementerial-main/assets/fonts/Inter"
+LOGOS = Path(os.environ["LAFLEUR_LOGOS"])
+FONTS = Path(os.environ["LAFLEUR_INTER"])
 OUT = ROOT / "ui/assets"
 # Police du logo (Distancia 900 Heavy), utilisée seulement pour dessiner le logo texte LAFLEURMUSIC.
-DISTANCIA = Path.home() / "Library/Mobile Documents/com~apple~CloudDocs/MOTOCLUB /motoclub_ASSEMBLAGE/Fonts/Distancia-900-Heavy [TheFontsMaster.com].otf"
+DISTANCIA = Path(os.environ["LAFLEUR_WORDMARK_FONT"])
 
 
 def wordmark(word, width):

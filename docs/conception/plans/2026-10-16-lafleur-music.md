@@ -255,7 +255,7 @@ lafleur-music/
 
 - [ ] **Step 1:** Tests `fit_text` avec `measure = function(s) return #s * 10 end` : `fit_text("1901", 100, m)` → `"1901"` ; `r = fit_text("Long Cool Woman", 80, m)` → `r` se termine par `"…"`, `m(r) <= 80`, et `r` sans le `"…"` est un préfixe de `"Long Cool Woman"` ; chaîne UTF-8 `"Ééééé"` jamais coupée au milieu d'un caractère (le résultat est de l'UTF-8 valide : `utf8_ok(r)` défini dans le test).
 - [ ] **Step 2:** FAIL. **Step 3:** implémenter `ui/src/text.lua`. **Step 4:** `ok`.
-- [ ] **Step 5:** `tools/make-assets.py` (venv du scratchpad, cairosvg) génère les PNG depuis `/Users/jkern/Claude/Logos LAFLEURSTUDIO/` ; lancer, vérifier les 3 PNG.
+- [ ] **Step 5:** `tools/make-assets.py` (venv du scratchpad, cairosvg) génère les PNG depuis le dossier des logos LAFLEURSTUDIO ; lancer, vérifier les 3 PNG.
 - [ ] **Step 6:** Implémenter `conf.lua`, `main.lua`, `theme.lua`, `splash.lua`, `message.lua`.
 - [ ] **Step 7:** `tools/build.sh && tools/dev.sh start && tools/dev.sh run` → splash puis écran vide « menu » (placeholder) ; MPD arrêté (`tools/dev.sh stop`) → « Audio engine unavailable » (console en `en_US`) ; avec `LAFLEUR_SYSCFG` pointant vers un fichier `system.language=fr_FR` → « Moteur audio indisponible ».
 - [ ] **Step 8:** Commit `feat: squelette de l'appli, thème et démarrage`.
