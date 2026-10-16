@@ -57,14 +57,22 @@ return function()
     local hints = {
       { app.t("shuffle") .. " (Y)", st.random == "1" },
       { app.t("repeat") .. (mode ~= "off" and (" : " .. app.t("repeat_" .. mode)) or "") .. " (X)", mode ~= "off" },
-      { app.t(st.state == "play" and "pause" or "play") .. " (START)", false },
+      { "START", false, icon = true }, -- ⏯ dessiné (absent de la police Inter)
     }
-    local hx = x
-    for _, h in ipairs(hints) do
+    local hx, hy = x, L.hints_y
+    for i, h in ipairs(hints) do
+      local need = small:getWidth(h[1]) + (h.icon and 25 * k or 0)
+      if i > 1 and hx + need > x + w then hx, hy = x, hy + 22 * k end -- écran étroit : ligne suivante
       local room = x + w - hx
-      if room <= 20 * k then break end
       theme.color(h[2] and c.pink or c.sub)
-      theme.print(h[1], small, hx, L.hints_y, room)
+      if h.icon then
+        local ih, iy = 12 * k, hy + (small:getHeight() - 12 * k) / 2
+        love.graphics.polygon("fill", hx, iy, hx, iy + ih, hx + 9 * k, iy + ih / 2)
+        love.graphics.rectangle("fill", hx + 11 * k, iy, 3 * k, ih)
+        love.graphics.rectangle("fill", hx + 16 * k, iy, 3 * k, ih)
+        hx, room = hx + 25 * k, room - 25 * k
+      end
+      theme.print(h[1], small, hx, hy, room)
       hx = hx + math.min(room, small:getWidth(h[1])) + 22 * k
     end
     local bg = S.read_background(app.state_dir) == "on"
