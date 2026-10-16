@@ -50,6 +50,11 @@ return {
     eq(i:release("down", 0.5), {})
     eq(i:update(1), {})
   end,
+  ["X et Y pilotent répéter et aléatoire"] = function()
+    local i = new()
+    eq(i:press("y", 0), { "shuffle" })
+    eq(i:press("x", 0), { "repeat" })
+  end,
   ["boutons simples"] = function()
     local i = new()
     eq(i:press("start", 0), { "playpause" })

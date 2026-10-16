@@ -14,6 +14,7 @@ I.strings = {
     n_songs = "%d morceaux", n_of = "%d sur %d", playlist_n = "Playlist · %d morceaux",
     empty_library = "Ajoute de la musique dans roms/music",
     engine_down = "Moteur audio indisponible", unknown = "Inconnu", updating = "Mise à jour…",
+    repeat_off = "OFF", repeat_all = "Tout", repeat_one = "Un seul",
   },
   en = {
     cover_flow = "Cover Flow", playlists = "Playlists", artists = "Artists", songs = "Songs",
@@ -26,6 +27,7 @@ I.strings = {
     n_songs = "%d songs", n_of = "%d of %d", playlist_n = "Playlist · %d songs",
     empty_library = "Add music to roms/music",
     engine_down = "Audio engine unavailable", unknown = "Unknown", updating = "Updating…",
+    repeat_off = "OFF", repeat_all = "All", repeat_one = "One",
   },
 }
 

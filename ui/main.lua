@@ -103,6 +103,21 @@ local function global_action(a)
     local cur = app.current()
     if not cur.is_nowplaying and app.songs and #app.songs > 0 then app.push(require("screens.nowplaying")()) end
     return true
+  elseif a == "shuffle" then
+    local PM = require("playmode")
+    local cmd = PM.shuffle_command(app.mpd:status())
+    app.mpd:command(cmd)
+    local on = cmd == "random 1"
+    toast.show_text(app.t("shuffle") .. " " .. app.t(on and "on" or "off"), on, nil, "Y")
+    status_timer = 0
+    return true
+  elseif a == "repeat" then
+    local PM = require("playmode")
+    local mode = PM.next_repeat(PM.repeat_mode(app.mpd:status()))
+    app.mpd:command(PM.repeat_commands(mode))
+    toast.show_text(app.t("repeat") .. " : " .. app.t("repeat_" .. mode), mode ~= "off", nil, "X")
+    status_timer = 0
+    return true
   elseif a == "toggle_background" then
     local new = S.read_background(app.state_dir) == "on" and "off" or "on"
     S.write_background(app.state_dir, new)
@@ -124,12 +139,12 @@ local function dispatch(actions)
 end
 
 local PAD = {
-  a = "a", b = "b", start = "start", back = "select", leftshoulder = "l1", rightshoulder = "r1",
+  a = "a", b = "b", x = "x", y = "y", start = "start", back = "select", leftshoulder = "l1", rightshoulder = "r1",
   dpup = "up", dpdown = "down", dpleft = "left", dpright = "right",
 }
 local KEYS = {
   ["return"] = "a", escape = "b", backspace = "b", space = "start", tab = "select",
-  q = "l1", e = "r1", up = "up", down = "down", left = "left", right = "right",
+  q = "l1", e = "r1", z = "x", c = "y", up = "up", down = "down", left = "left", right = "right",
 }
 local logged_buttons = 0
 

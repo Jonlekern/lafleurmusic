@@ -23,6 +23,10 @@ return {
     eq(I.t("fr", "bg_on_msg"), "La musique continue\nquand tu quittes l'appli")
     eq(I.t("en", "engine_down"), "Audio engine unavailable")
   end,
+  ["modes de répétition"] = function()
+    eq(I.t("fr", "repeat_one"), "Un seul")
+    eq(I.t("en", "repeat_all"), "All")
+  end,
   ["chaque clé existe dans les deux langues"] = function()
     for key in pairs(I.strings.fr) do truthy(I.strings.en[key], "en manque " .. key) end
     for key in pairs(I.strings.en) do truthy(I.strings.fr[key], "fr manque " .. key) end

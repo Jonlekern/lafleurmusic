@@ -1,10 +1,16 @@
--- Petit écran « Arrière-plan ON/OFF » (L1 + R1), 1,5 s par-dessus l'écran courant.
+-- Petit écran de 1,5 s par-dessus l'écran courant : arrière-plan (L1 + R1), aléatoire (Y), répéter (X).
 local theme = require("theme")
 
 local toast = { left = 0, on = true }
 
+-- title : texte principal ; on : rose (actif) ou gris ; msg : explication ou nil ; hint : bouton.
+function toast.show_text(title, on, msg, hint)
+  toast.title, toast.on, toast.msg, toast.hint, toast.left = title, on, msg, hint, 1.5
+end
+
 function toast.show(on)
-  toast.on, toast.left = on, 1.5
+  toast.show_text(app.t("background") .. " " .. app.t(on and "on" or "off"), on,
+    app.t(on and "bg_on_msg" or "bg_off_msg"), "L1 + R1")
 end
 
 function toast.update(dt)
@@ -27,12 +33,14 @@ function toast.draw()
   love.graphics.setColor(1, 1, 1, (toast.on and 1 or 0.35) * fade)
   love.graphics.draw(flower, 360 - 45, 135, 0, 90 / flower:getWidth())
   theme.color(toast.on and c.pink or { 0.8, 0.8, 0.8 }, fade)
-  theme.print(app.t("background") .. " " .. app.t(toast.on and "on" or "off"), theme.font("Bold", 30), x, 228, w, "center")
-  theme.color({ 0.86, 0.86, 0.86 }, fade)
-  love.graphics.setFont(theme.font("Regular", 19))
-  love.graphics.printf(app.t(toast.on and "bg_on_msg" or "bg_off_msg"), x, 276, w, "center")
+  theme.print(toast.title, theme.font("Bold", 30), x + 10, toast.msg and 228 or 252, w - 20, "center")
+  if toast.msg then
+    theme.color({ 0.86, 0.86, 0.86 }, fade)
+    love.graphics.setFont(theme.font("Regular", 19))
+    love.graphics.printf(toast.msg, x, 276, w, "center")
+  end
   theme.color({ 0.55, 0.55, 0.55 }, fade)
-  theme.print("L1 + R1", theme.font("Regular", 14), x, 340, w, "center")
+  theme.print(toast.hint or "", theme.font("Regular", 14), x, 340, w, "center")
 end
 
 return toast

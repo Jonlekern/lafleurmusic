@@ -1,6 +1,7 @@
 -- Réglages : aléatoire, répéter (MPD), arrière-plan par défaut (settings.txt), mise à jour de la bibliothèque.
 local list = require("screens.list")
 local S = require("settings")
+local PM = require("playmode")
 
 return function()
   local updating = false
@@ -15,8 +16,11 @@ return function()
     },
     {
       label = app.t("repeat"),
-      value = function() return onoff((app.status or {})["repeat"] == "1") end,
-      on_ok = function() app.mpd:command("repeat " .. (st()["repeat"] == "1" and 0 or 1)); app.status = st() end,
+      value = function() return app.t("repeat_" .. PM.repeat_mode(app.status)) end,
+      on_ok = function()
+        app.mpd:command(PM.repeat_commands(PM.next_repeat(PM.repeat_mode(st()))))
+        app.status = st()
+      end,
     },
     {
       label = app.t("background_default"),
