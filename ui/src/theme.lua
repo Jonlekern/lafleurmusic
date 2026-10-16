@@ -82,7 +82,16 @@ function theme.title_bar(title, playing, battery)
     theme.print(title, theme.font("Bold", 20), 130 * k, 10 * k, W - 260 * k, "center")
   end
   if battery then
-    theme.print(battery .. "%", theme.font("Regular", 15), W - 160 * k, 13 * k, 92 * k, "right")
+    local f = theme.font("Regular", 15)
+    local txt = battery .. "%"
+    theme.print(txt, f, W - 160 * k, 13 * k, 92 * k, "right")
+    if theme.charging then
+      -- éclair rose à gauche du pourcentage (deux triangles : polygon ne remplit que du convexe)
+      local x, y = W - 68 * k - f:getWidth(txt) - 14 * k, 12 * k
+      theme.color(c.pink)
+      love.graphics.polygon("fill", x + 8 * k, y, x, y + 11 * k, x + 6 * k, y + 11 * k)
+      love.graphics.polygon("fill", x + 5 * k, y + 9 * k, x + 11 * k, y + 9 * k, x + 3 * k, y + 20 * k)
+    end
   end
   battery_icon(W - 62 * k, 13 * k, battery, k)
 end
