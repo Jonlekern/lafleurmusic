@@ -29,6 +29,12 @@ return {
     eq(Lay.nowplaying(1280, 720).mode, "landscape")
     eq(Lay.nowplaying(720, 720).mode, "square")
   end,
+  ["En cours en 720x480 : identique à la maquette d'origine"] = function()
+    local n = Lay.nowplaying(720, 480)
+    eq({ n.cover.x, n.cover.y, n.cover.size }, { 30, 66, 270 })
+    eq({ n.text.x, n.text.y, n.text.w }, { 330, 82, 360 })
+    eq({ n.progress_y, n.hints_y, n.badge_y }, { 300, 372, 420 })
+  end,
   ["En cours : tout tient dans l'écran"] = function()
     for _, s in ipairs({ { 640, 480 }, { 720, 480 }, { 720, 720 }, { 1280, 720 } }) do
       local n = Lay.nowplaying(s[1], s[2])

@@ -42,9 +42,9 @@ function Lay.nowplaying(W, H)
     n.cover = { x = math.floor((W - size) / 2), y = bar + round(20 * k), size = size }
     n.text = { x = round(40 * k), y = bar + size + round(34 * k), w = W - round(80 * k) }
   end
-  n.progress_y = n.text.y + round(170 * k)
-  n.hints_y = n.progress_y + round(30 * k)
-  n.badge_y = n.hints_y + round(36 * k)
+  n.progress_y = n.text.y + round(218 * k)
+  n.hints_y = n.progress_y + round(72 * k)
+  n.badge_y = n.progress_y + round(120 * k)
   return n
 end
 

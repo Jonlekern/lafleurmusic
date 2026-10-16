@@ -43,12 +43,14 @@ return function()
   end
 
   function s.draw()
-    local c = theme.colors
+    local c, k, W, H = theme.colors, theme.k, theme.W, theme.H
+    local oy = math.floor((H - 480 * k) / 2) -- écrans plus hauts que 3:2 : on centre verticalement
     theme.title_bar(app.t("cover_flow"), app.playing(), app.battery)
-    for _, e in ipairs(CF.layout(s.pos, #albums)) do
+    for _, e in ipairs(CF.layout(s.pos, #albums, W, H)) do
       local img = covers.get(albums[e.index].first_file, 300)
+      e.y = e.y + oy
       if e.side == "center" then
-        theme.cover(img, e.x, e.y, e.w, 60)
+        theme.cover(img, e.x, e.y, e.w, math.floor(60 * k))
       else
         love.graphics.setColor(0.65, 0.65, 0.65, 1)
         love.graphics.draw(side_mesh(img, e))
@@ -57,14 +59,14 @@ return function()
     local a = albums[s.target]
     if a then
       theme.color(c.text)
-      theme.print(a.name ~= "" and a.name or app.t("unknown"), theme.font("Bold", 24), 40, 386, 640, "center")
+      theme.print(a.name ~= "" and a.name or app.t("unknown"), theme.font("Bold", 24), 40 * k, oy + 386 * k, W - 80 * k, "center")
       theme.color(c.sub)
-      theme.print(app.t("playlist_n", a.count), theme.font("Regular", 17), 40, 420, 640, "center")
+      theme.print(app.t("playlist_n", a.count), theme.font("Regular", 17), 40 * k, oy + 420 * k, W - 80 * k, "center")
     end
     local n = #albums
     for i = 1, n do
       theme.color(i == s.target and c.pink or { 0.27, 0.27, 0.27 })
-      love.graphics.circle("fill", 360 - (n - 1) * 10 + (i - 1) * 20, 460, 4)
+      love.graphics.circle("fill", W / 2 + ((i - 1) - (n - 1) / 2) * 20 * k, oy + 460 * k, 4 * k)
     end
   end
 

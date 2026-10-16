@@ -29,11 +29,12 @@ return function()
 
   function s.draw()
     local flower, logo = theme.image("fleur"), theme.image("logo-texte-grand")
-    local fw = 260
+    local k, W, H = theme.k, theme.W, theme.H
+    local oy = (H - 480 * k) / 2
+    local fw, lw = 260 * k, 450 * k
     love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(flower, (720 - fw) / 2, 110, 0, fw / flower:getWidth())
-    local lw = 450
-    love.graphics.draw(logo, (720 - lw) / 2, 340, 0, lw / logo:getWidth())
+    love.graphics.draw(flower, (W - fw) / 2, oy + 110 * k, 0, fw / flower:getWidth())
+    love.graphics.draw(logo, (W - lw) / 2, oy + 340 * k, 0, lw / logo:getWidth())
   end
 
   function s.action(a) end

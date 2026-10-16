@@ -1,12 +1,14 @@
--- Liste façon iPod Classic 6G : lignes à gauche (380 px), pochette de l'élément sélectionné à droite.
+-- Liste façon iPod Classic 6G : lignes à gauche, pochette de l'élément sélectionné à droite.
 -- items : { {label, value?, cover_file?, caption?, on_ok} } ; value() → texte à droite à la place du chevron.
+-- Mise en page : layout.list (s'adapte à la taille de l'écran).
 local theme = require("theme")
 local covers = require("covers")
-
-local ROW_H, VISIBLE, LIST_W = 54, 8, 380
+local Lay = require("layout")
 
 return function(opts)
   local s = { ready = true, sel = 1, top = 1, title = opts.title, items = opts.items }
+  local L = Lay.list(theme.W, theme.H)
+  local VISIBLE = L.rows
 
   local function clamp()
     local n = #s.items
@@ -31,12 +33,14 @@ return function(opts)
   end
 
   function s.draw()
-    local c = theme.colors
+    local c, k, W, H = theme.colors, theme.k, theme.W, theme.H
+    local LIST_W, ROW_H = L.list_w, L.row_h
     theme.title_bar(s.title, app.playing(), app.battery)
     local row_font, chev_font = theme.font("Bold", 21), theme.font("Bold", 28)
     for i = s.top, math.min(#s.items, s.top + VISIBLE - 1) do
       local it = s.items[i]
-      local y = theme.BAR_H + (i - s.top) * ROW_H
+      local y = L.bar + (i - s.top) * ROW_H
+      local ty = y + (ROW_H - row_font:getHeight()) / 2
       local selected = i == s.sel
       if selected then
         theme.color(c.pink)
@@ -44,33 +48,34 @@ return function(opts)
       end
       theme.color(selected and c.ink or c.text)
       local value = it.value and it.value()
-      local right_w = value and 90 or 30
-      theme.print(it.label, row_font, 22, y + 14, LIST_W - 22 - right_w - 10)
+      local right_w = (value and 90 or 30) * k
+      theme.print(it.label, row_font, 22 * k, ty, LIST_W - 22 * k - right_w - 10 * k)
       if value then
-        theme.print(value, theme.font("Bold", 18), LIST_W - 110, y + 16, 92, "right")
+        theme.print(value, theme.font("Bold", 18), LIST_W - 110 * k, ty + 2 * k, 92 * k, "right")
       elseif it.on_ok then
-        theme.print("›", chev_font, LIST_W - 50, y + 8, 32, "right")
+        theme.print("›", chev_font, LIST_W - 50 * k, y + (ROW_H - chev_font:getHeight()) / 2, 32 * k, "right")
       end
     end
     -- barre de défilement
     if #s.items > VISIBLE then
-      local track = 480 - theme.BAR_H
-      local h = math.max(24, track * VISIBLE / #s.items)
-      local y = theme.BAR_H + (track - h) * (s.top - 1) / (#s.items - VISIBLE)
+      local track = H - L.bar
+      local h = math.max(24 * k, track * VISIBLE / #s.items)
+      local y = L.bar + (track - h) * (s.top - 1) / (#s.items - VISIBLE)
       theme.color(c.sub, 0.5)
-      love.graphics.rectangle("fill", LIST_W - 4, y, 3, h)
+      love.graphics.rectangle("fill", LIST_W - 4 * k, y, 3 * k, h)
     end
     theme.color(c.line)
-    love.graphics.line(LIST_W, theme.BAR_H, LIST_W, 480)
+    love.graphics.line(LIST_W, L.bar, LIST_W, H)
     -- panneau de droite
     local it = s.items[s.sel]
     local file = it and (it.cover_file or (opts.default_cover and opts.default_cover()))
     if file or (it and it.show_tile) then
-      theme.cover(covers.get(file, 300), 400, 64, 300, 70)
+      local cv = L.cover
+      theme.cover(covers.get(file, 300), cv.x, cv.y, cv.size, math.floor(70 * k))
       local caption = it.caption or (opts.default_caption and opts.default_caption())
       if caption then
         theme.color(c.sub)
-        theme.print(caption, theme.font("Regular", 15), 390, 444, 320, "center")
+        theme.print(caption, theme.font("Regular", 15), LIST_W + 10 * k, L.caption_y, W - LIST_W - 20 * k, "center")
       end
     end
   end

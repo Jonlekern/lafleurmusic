@@ -184,6 +184,8 @@ function love.load()
   local db = read_file(PADDB)
   if db then pcall(love.joystick.loadGamepadMappings, db) end
   love.mouse.setVisible(false)
+  theme.setup(love.graphics.getDimensions())
+  app.log(string.format("écran %dx%d, échelle %.2f", theme.W, theme.H, theme.k))
   love.graphics.setBackgroundColor(theme.colors.bg)
   read_battery()
   app.log("démarrage, langue " .. app.lang)
