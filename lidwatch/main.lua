@@ -1,4 +1,5 @@
--- Gardien du clapet : clapet fermé + arrière-plan ON + lecture → rétroéclairage éteint.
+-- Gardien du clapet : arrière-plan ON → clapet fermé en lecture = écran éteint, la musique continue ;
+-- arrière-plan OFF → clapet fermé = pause + écran éteint, reprise à l'ouverture.
 -- Ne met jamais la console en veille ; rallume toujours l'écran avant de sortir.
 love.filesystem.setRequirePath("?.lua;?/init.lua;src/?.lua;common/?.lua")
 
@@ -66,13 +67,14 @@ local function main()
   thread:start(device)
 
   local mpd = C.new({ port = tonumber(os.getenv("LAFLEUR_MPD_PORT") or "6601") })
-  local closed, state, misses, next_poll = false, nil, 0, 0
+  local closed, state, misses, next_poll, paused_by_us = false, nil, 0, 0, false
 
   while true do
     local msg = channel:pop()
     while msg do
       if msg:match("^error") then return msg end
       closed = (msg == "closed")
+      next_poll = 0 -- relire l'état de lecture tout de suite après un mouvement du clapet
       msg = channel:pop()
     end
     local now = love.timer.getTime()
@@ -86,7 +88,14 @@ local function main()
         if misses >= MAX_MISSES then return "moteur audio arrêté" end
       end
     end
-    set_screen(rule.screen_on(closed, S.read_background(STATE), state))
+    local on, action
+    on, action, paused_by_us = rule.decide(closed, S.read_background(STATE), state, paused_by_us)
+    if action == "pause" then
+      mpd:command("pause 1"); state = "pause"; log("clapet fermé, arrière-plan OFF : pause")
+    elseif action == "resume" then
+      mpd:command("pause 0"); state = "play"; log("clapet rouvert : reprise")
+    end
+    set_screen(on)
     love.timer.sleep(TICK)
   end
 end
