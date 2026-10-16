@@ -1,6 +1,10 @@
 local In = require("input")
 
-local function new() return In.new({ window = 0.15, repeat_delay = 0.4, repeat_rate = 0.08 }) end
+local function new(opts)
+  opts = opts or {}
+  opts.window, opts.repeat_delay, opts.repeat_rate = 0.15, 0.4, 0.08
+  return In.new(opts)
+end
 
 return {
   ["L1 puis R1 rapprochés basculent l'arrière-plan"] = function()
@@ -67,5 +71,42 @@ return {
     eq(i:press("left", 0), { "left" })
     eq(i:press("right", 0), { "right" })
     eq(i:press("up", 0), { "up" })
+  end,
+  ["combinaison perso"] = function()
+    local i = new({ bindings = { shuffle = "x+y" } })
+    eq(i:press("x", 0), {})
+    eq(i:press("y", 0.1), { "shuffle" })
+    eq(i:update(0.5), {})
+  end,
+  ["touche d'une combinaison seule après la fenêtre"] = function()
+    local i = new({ bindings = { shuffle = "x+y", ["repeat"] = "x" } })
+    i:press("x", 0)
+    eq(i:update(0.1), {})
+    eq(i:update(0.16), { "repeat" })
+  end,
+  ["touche hors combinaison immédiate"] = function()
+    eq(new():press("y", 0), { "shuffle" })
+  end,
+  ["touche sans raccourci ne fait rien"] = function()
+    local i = new({ bindings = { shuffle = "x+y" } })
+    eq(i:press("start", 0), {})
+  end,
+  ["A/B inversés"] = function()
+    local i = new({ ab_swap = true })
+    eq(i:press("a", 0), { "back" })
+    eq(i:press("b", 0), { "ok" })
+  end,
+  ["set_bindings s'applique"] = function()
+    local i = new()
+    i:set_bindings({ shuffle = "l2" }, false)
+    eq(i:press("y", 0), {})
+    eq(i:press("l2", 0), { "shuffle" })
+  end,
+  ["L1 maintenu puis R1 tard : précédent, jamais arrière-plan"] = function()
+    local i = new()
+    i:press("l1", 0)
+    eq(i:update(0.16), { "previous" })
+    eq(i:press("r1", 0.5), {})
+    eq(i:update(0.66), { "next" })
   end,
 }
