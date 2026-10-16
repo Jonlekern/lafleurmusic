@@ -103,12 +103,10 @@ local function main()
   local function run(action)
     log("clapet fermé : " .. action)
     if action == "playpause" then
-      if state == "play" then
-        mpd:command("pause 1"); state = "pause"
-      else
-        mpd:command(state == "pause" and "pause 0" or "play"); state = "play"
-        if paused_by_us then paused_by_us, override = false, true end
-      end
+      local cmd, new_state, user_play = rule.toggle(state)
+      mpd:command(cmd)
+      state = new_state
+      if user_play then paused_by_us, override = false, true end
     elseif action == "next" or action == "previous" then
       mpd:command(action)
     elseif action == "shuffle" then
@@ -121,9 +119,12 @@ local function main()
   while true do
     local msg = channel:pop()
     while msg do
-      if msg:match("^error") then return msg end
+      local kind = lid.message_kind(msg)
+      if kind == "fatal" then return msg end
       local code, value = msg:match("^key:(%d+):(%-?%d+)")
-      if code then
+      if kind == "pad_error" then
+        log("manette : " .. msg .. " — on continue sans touches clapet fermé")
+      elseif code then
         if logged_keys < 60 and value ~= "2" then
           logged_keys = logged_keys + 1
           log("touche " .. code .. " " .. value .. (closed and " (clapet fermé)" or ""))

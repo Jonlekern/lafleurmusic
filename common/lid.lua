@@ -63,6 +63,14 @@ function lid.key_event(ev)
   return nil
 end
 
+-- Message du canal « lid » : erreur du clapet (arrête le gardien), erreur de la manette (on continue sans), touche ou clapet.
+function lid.message_kind(msg)
+  if msg:match("^error") then return "fatal" end
+  if msg:match("^paderror") then return "pad_error" end
+  if msg:match("^key:") then return "key" end
+  return "lid"
+end
+
 function lid.lid_state(ev)
   if ev and ev.type == EV_SW and ev.code == SW_LID then
     return ev.value ~= 0 and "closed" or "open"

@@ -3,22 +3,19 @@ local rule = require("rule")
 local function d(...) return { rule.decide(...) } end
 
 return {
-  ["écran éteint seulement clapet fermé, arrière-plan ON et lecture"] = function()
+  ["écran éteint clapet fermé, arrière-plan ON"] = function()
     eq(rule.screen_on(true, "on", "play"), false)
   end,
-  ["toutes les autres combinaisons gardent l'écran allumé"] = function()
+  ["clapet ouvert : écran allumé"] = function()
     eq(rule.screen_on(false, "on", "play"), true)
-    eq(rule.screen_on(true, "on", "pause"), true)
-    eq(rule.screen_on(true, "on", "stop"), true)
-    eq(rule.screen_on(true, "on", nil), true)
     eq(rule.screen_on(false, "off", nil), true)
     eq(rule.screen_on(false, "off", "pause"), true)
   end,
   ["ON : clapet fermé en lecture → écran éteint, pas de pause"] = function()
     eq(d(true, "on", "play", false), { false, nil, false })
   end,
-  ["ON : clapet fermé en pause → écran allumé"] = function()
-    eq(d(true, "on", "pause", false), { true, nil, false })
+  ["ON : clapet fermé en pause → écran éteint aussi"] = function()
+    eq(d(true, "on", "pause", false), { false, nil, false })
   end,
   ["OFF : clapet fermé en lecture → pause et écran éteint"] = function()
     eq(d(true, "off", "play", false), { false, "pause", true })
@@ -40,5 +37,16 @@ return {
   end,
   ["OFF : sans relance, clapet fermé en lecture = pause"] = function()
     eq(d(true, "off", "play", false, false), { false, "pause", true })
+  end,
+  ["touche lecture clapet fermé : relance toujours sans re-pause"] = function()
+    eq({ rule.toggle("pause") }, { "pause 0", "play", true })
+    eq({ rule.toggle("stop") }, { "play", "play", true })
+    eq({ rule.toggle(nil) }, { "play", "play", true })
+    eq({ rule.toggle("play") }, { "pause 1", "pause", false })
+  end,
+  ["ON : clapet fermé, écran toujours éteint (même en pause)"] = function()
+    eq(rule.screen_on(true, "on", "pause"), false)
+    eq(rule.screen_on(true, "on", "stop"), false)
+    eq(rule.screen_on(false, "on", "pause"), true)
   end,
 }

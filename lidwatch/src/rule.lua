@@ -1,9 +1,15 @@
 -- Ce que fait le gardien selon le clapet, l'arrière-plan et l'état de lecture.
 local rule = {}
 
--- Arrière-plan ON : l'écran ne s'éteint que clapet fermé et musique en lecture (la musique continue).
+-- Arrière-plan ON : clapet fermé = écran éteint, en lecture comme en pause (pause possible clapet fermé).
 function rule.screen_on(lid_closed, background, state)
-  return not (lid_closed and background == "on" and state == "play")
+  return not (lid_closed and background == "on")
+end
+
+-- Touche lecture / pause clapet fermé : commande MPD, nouvel état, et override (pas de re-pause par le gardien).
+function rule.toggle(state)
+  if state == "play" then return "pause 1", "pause", false end
+  return state == "pause" and "pause 0" or "play", "play", true
 end
 
 -- Renvoie screen_on, action ("pause" | "resume" | nil), paused_by_us.

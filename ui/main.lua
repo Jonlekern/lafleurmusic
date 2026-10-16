@@ -180,10 +180,13 @@ local function press(btn)
   dispatch(input:press(btn, t))
 end
 local function release(btn)
-  if not btn or lid_closed() then return end
+  if not btn then return end
   local t, cur = love.timer.getTime(), app.current()
+  -- toujours prévenir input (fin de la répétition de la croix), même si le relâchement est intercepté
+  local acts = input:release(btn, t)
+  if lid_closed() then return end
   if cur.raw_release and cur.raw_release(btn, t) then return end
-  dispatch(input:release(btn, t))
+  dispatch(acts)
 end
 
 function love.gamepadpressed(_, button)

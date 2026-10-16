@@ -84,4 +84,10 @@ return {
     eq({ lid.key_event(lid.decode(event(1, 305, 1))) }, { 305, 1 })
     eq(lid.key_event(lid.decode(event(0, 0, 0))), nil)
   end,
+  ["une erreur de la manette n'arrête pas le gardien"] = function()
+    eq(lid.message_kind("error:open /dev/input/event3"), "fatal")
+    eq(lid.message_kind("paderror:read /dev/input/event4"), "pad_error")
+    eq(lid.message_kind("key:310:1"), "key")
+    eq(lid.message_kind("closed"), "lid")
+  end,
 }

@@ -5,15 +5,16 @@ local lid = require("lid")
 local device, mode = ...
 local channel = love.thread.getChannel("lid")
 
+local err = mode == "pad" and "paderror:" or "error:"
 local f = io.open(device, "rb")
 if not f then
-  channel:push("error:open " .. device)
+  channel:push(err .. "open " .. device)
   return
 end
 while true do
   local bytes = f:read(24)
   if not bytes then
-    channel:push("error:read " .. device)
+    channel:push(err .. "read " .. device)
     break
   end
   local ev = lid.decode(bytes)
