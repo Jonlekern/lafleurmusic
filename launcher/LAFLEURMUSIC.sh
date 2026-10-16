@@ -1,5 +1,5 @@
 #!/bin/bash
-# LAFLEUR Music — lanceur affiché dans le menu Music de ROCKNIX (/storage/.config/gmu/playlists/).
+# LAFLEURMUSIC — lanceur affiché dans le menu Music de ROCKNIX (/storage/.config/gmu/playlists/).
 # Démarre le moteur MPD et le gardien du clapet s'ils ne tournent pas, puis l'interface.
 # À la sortie : arrière-plan OFF → arrêt du gardien (écran rallumé) et de MPD ; ON → tout continue.
 # LÖVE : binaire aarch64 du port PortMaster « Spotify Connect » (ELF autonome + bin/libs),

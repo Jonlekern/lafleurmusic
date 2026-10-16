@@ -1,6 +1,6 @@
 function love.conf(t)
   t.identity = "lafleur-music"
-  t.window.title = "LAFLEUR Music"
+  t.window.title = "LAFLEURMUSIC"
   t.window.width = 720
   t.window.height = 480
   t.window.fullscreen = (os.getenv("LAFLEUR_WINDOWED") == nil)

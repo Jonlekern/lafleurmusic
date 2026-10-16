@@ -28,7 +28,7 @@ return function()
   end
 
   function s.draw()
-    local flower, logo = theme.image("fleur"), theme.image("logo-texte")
+    local flower, logo = theme.image("fleur"), theme.image("logo-texte-grand")
     local fw = 260
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(flower, (720 - fw) / 2, 110, 0, fw / flower:getWidth())

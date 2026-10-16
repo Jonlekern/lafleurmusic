@@ -1,4 +1,4 @@
--- LAFLEUR Music : interface LÖVE qui pilote le moteur MPD (127.0.0.1:6601).
+-- LAFLEURMUSIC : interface LÖVE qui pilote le moteur MPD (127.0.0.1:6601).
 love.filesystem.setRequirePath("?.lua;?/init.lua;src/?.lua;common/?.lua")
 
 local C = require("mpd_client")

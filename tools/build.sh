@@ -24,8 +24,8 @@ chmod +x "$OUT/engine/mpd" "$OUT/bin/lafleur-ui" "$OUT/bin/lafleur-lid"
 cp "vendor/mpd/licenses/MPD License.txt" "$OUT/licenses/MPD-GPL-2.0.txt"
 cp vendor/librespot/LICENSE.txt "$OUT/licenses/port-librespot-LICENSE.txt"
 cp ui/assets/fonts/LICENSE.txt "$OUT/licenses/Inter-OFL.txt"
-cp "launcher/LAFLEUR Music.sh" "$OUT/LAFLEUR Music.sh"
-chmod +x "$OUT/LAFLEUR Music.sh"
+cp "launcher/LAFLEURMUSIC.sh" "$OUT/LAFLEURMUSIC.sh"
+chmod +x "$OUT/LAFLEURMUSIC.sh"
 
 xattr -cr "$OUT" # sinon macOS crée des fichiers ._* sur le partage
 find "$OUT" -name '._*' -delete
