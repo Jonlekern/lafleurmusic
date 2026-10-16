@@ -30,6 +30,8 @@ return function()
         S.save(app.settings_path, app.settings)
       end,
     },
+    { label = app.t("keys_open"), on_ok = function() app.push(require("screens.keys")("open")) end },
+    { label = app.t("keys_closed"), on_ok = function() app.push(require("screens.keys")("closed")) end },
     {
       label = app.t("update_library"),
       value = function() return updating and app.t("updating") or "" end,

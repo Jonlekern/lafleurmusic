@@ -15,6 +15,12 @@ I.strings = {
     empty_library = "Ajoute de la musique dans roms/music",
     engine_down = "Moteur audio indisponible", unknown = "Inconnu", updating = "Mise à jour…",
     repeat_off = "OFF", repeat_all = "Tout", repeat_one = "Un seul", pause = "Pause", play = "Lecture",
+    keys_open = "Touches clapet ouvert", keys_closed = "Touches clapet fermé", ab_swap = "A/B inversés",
+    reset_keys = "Réinitialiser", press_key = "Appuie sur une touche",
+    press_two_keys = "Appuie sur deux touches\nen même temps", key_reserved = "Touche réservée",
+    cancelled_in = "Annulé dans 5 s si rien", act_playpause = "Lecture / Pause", act_next = "Morceau suivant",
+    act_previous = "Morceau précédent", act_shuffle = "Aléatoire", act_repeat = "Répéter",
+    act_now_playing = "En cours", act_toggle_background = "Arrière-plan",
   },
   en = {
     cover_flow = "Cover Flow", playlists = "Playlists", artists = "Artists", songs = "Songs",
@@ -28,6 +34,11 @@ I.strings = {
     empty_library = "Add music to roms/music",
     engine_down = "Audio engine unavailable", unknown = "Unknown", updating = "Updating…",
     repeat_off = "OFF", repeat_all = "All", repeat_one = "One", pause = "Pause", play = "Play",
+    keys_open = "Keys (lid open)", keys_closed = "Keys (lid closed)", ab_swap = "Swap A/B", reset_keys = "Reset",
+    press_key = "Press a key", press_two_keys = "Press two keys\nat the same time", key_reserved = "Reserved key",
+    cancelled_in = "Cancelled after 5 s", act_playpause = "Play / Pause", act_next = "Next track",
+    act_previous = "Previous track", act_shuffle = "Shuffle", act_repeat = "Repeat",
+    act_now_playing = "Now Playing", act_toggle_background = "Background",
   },
 }
 

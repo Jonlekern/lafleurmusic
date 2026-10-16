@@ -10,7 +10,7 @@ end
 
 function toast.show(on)
   toast.show_text(app.t("background") .. " " .. app.t(on and "on" or "off"), on,
-    app.t(on and "bg_on_msg" or "bg_off_msg"), "L1 + R1")
+    app.t(on and "bg_on_msg" or "bg_off_msg"), app.key_label("toggle_background"))
 end
 
 function toast.update(dt)

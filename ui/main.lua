@@ -7,6 +7,7 @@ local S = require("settings")
 local In = require("input")
 local theme = require("theme")
 local toast = require("screens.toast")
+local K = require("keymap")
 
 local APPDIR = os.getenv("LAFLEUR_APPDIR") or "/storage/roms/lafleur-music"
 local SYSCFG = os.getenv("LAFLEUR_SYSCFG") or "/storage/.config/system/configs/system.cfg"
@@ -87,6 +88,14 @@ function app.play_list(tracks, index)
 end
 
 local input = In.new()
+
+-- Touches personnalisées : enregistrées dans settings.txt et appliquées tout de suite.
+function app.apply_keys()
+  K.store(app.settings, app.keys)
+  pcall(S.save, app.settings_path, app.settings)
+  input:set_bindings(app.keys.open, app.keys.ab_swap)
+end
+function app.key_label(action) return K.label(app.keys.open[action]) end
 local status_timer, battery_timer = 0, 0
 
 local function global_action(a)
@@ -111,14 +120,14 @@ local function global_action(a)
     local cmd = PM.shuffle_command(app.mpd:status())
     app.mpd:command(cmd)
     local on = cmd == "random 1"
-    toast.show_text(app.t("shuffle") .. " " .. app.t(on and "on" or "off"), on, nil, "Y")
+    toast.show_text(app.t("shuffle") .. " " .. app.t(on and "on" or "off"), on, nil, app.key_label("shuffle"))
     status_timer = 0
     return true
   elseif a == "repeat" then
     local PM = require("playmode")
     local mode = PM.next_repeat(PM.repeat_mode(app.mpd:status()))
     app.mpd:command(PM.repeat_commands(mode))
-    toast.show_text(app.t("repeat") .. " : " .. app.t("repeat_" .. mode), mode ~= "off", nil, "X")
+    toast.show_text(app.t("repeat") .. " : " .. app.t("repeat_" .. mode), mode ~= "off", nil, app.key_label("repeat"))
     status_timer = 0
     return true
   elseif a == "toggle_background" then
@@ -151,21 +160,42 @@ local KEYS = {
 }
 local logged_buttons = 0
 
+-- Un écran en train de capturer une touche (Touches) reçoit les boutons bruts.
+local function press(btn)
+  if not btn then return end
+  local t, cur = love.timer.getTime(), app.current()
+  if cur.raw_press and cur.raw_press(btn, t) then return end
+  dispatch(input:press(btn, t))
+end
+local function release(btn)
+  if not btn then return end
+  local t, cur = love.timer.getTime(), app.current()
+  if cur.raw_release and cur.raw_release(btn, t) then return end
+  dispatch(input:release(btn, t))
+end
+
 function love.gamepadpressed(_, button)
   if logged_buttons < 40 then
     logged_buttons = logged_buttons + 1
     app.log("bouton " .. button)
   end
-  if PAD[button] then dispatch(input:press(PAD[button], love.timer.getTime())) end
+  press(PAD[button])
 end
-function love.gamepadreleased(_, button)
-  if PAD[button] then dispatch(input:release(PAD[button], love.timer.getTime())) end
-end
-function love.keypressed(key)
-  if KEYS[key] then dispatch(input:press(KEYS[key], love.timer.getTime())) end
-end
-function love.keyreleased(key)
-  if KEYS[key] then dispatch(input:release(KEYS[key], love.timer.getTime())) end
+function love.gamepadreleased(_, button) release(PAD[button]) end
+function love.keypressed(key) press(KEYS[key]) end
+function love.keyreleased(key) release(KEYS[key]) end
+-- L2 / R2 arrivent comme axes : appui au-dessus de 0,5, relâchement en dessous de 0,3.
+local TRIGGERS, trigger_down = { triggerleft = "l2", triggerright = "r2" }, {}
+function love.gamepadaxis(_, axis, value)
+  local btn = TRIGGERS[axis]
+  if not btn then return end
+  if value > 0.5 and not trigger_down[btn] then
+    trigger_down[btn] = true
+    press(btn)
+  elseif value < 0.3 and trigger_down[btn] then
+    trigger_down[btn] = false
+    release(btn)
+  end
 end
 
 local function read_battery()
@@ -178,6 +208,8 @@ function love.load()
   if f then f:close() end
   app.lang = I.detect(read_file(SYSCFG))
   app.settings = S.load(app.settings_path)
+  app.keys = K.load(app.settings)
+  input:set_bindings(app.keys.open, app.keys.ab_swap)
   -- « Arrière-plan par défaut » : valeur appliquée à chaque lancement.
   pcall(S.write_background, app.state_dir, app.settings.background_default)
   app.mpd = C.new({ port = tonumber(os.getenv("LAFLEUR_MPD_PORT") or "6601") })

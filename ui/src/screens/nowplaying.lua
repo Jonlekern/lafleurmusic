@@ -51,14 +51,19 @@ return function()
     theme.color(c.sub)
     theme.print(clock(elapsed), theme.font("Regular", 16), x, py + 22 * k, 100 * k)
     theme.print("-" .. clock(duration - elapsed), theme.font("Regular", 16), x + w - 100 * k, py + 22 * k, 100 * k, "right")
-    -- Aléatoire (Y) · Répéter (X) · Pause/Lecture (START), à la suite sur une ligne
+    -- Aléatoire (Y) · Répéter (X) · ⏯ START, avec les touches choisies
     local small = theme.font("Regular", 16)
     local mode = require("playmode").repeat_mode(st)
     local hints = {
-      { app.t("shuffle") .. " (Y)", st.random == "1" },
-      { app.t("repeat") .. (mode ~= "off" and (" : " .. app.t("repeat_" .. mode)) or "") .. " (X)", mode ~= "off" },
-      { "START", st.state == "play", icon = true }, -- ⏯ dessiné (absent de la police Inter), rose pendant la lecture
+      { app.t("shuffle") .. " (" .. app.key_label("shuffle") .. ")", st.random == "1", key = "shuffle" },
+      { app.t("repeat") .. (mode ~= "off" and (" : " .. app.t("repeat_" .. mode)) or "") .. " (" .. app.key_label("repeat") .. ")",
+        mode ~= "off", key = "repeat" },
+      { app.key_label("playpause"), st.state == "play", icon = true, key = "playpause" }, -- ⏯ dessiné, rose pendant la lecture
     }
+    -- un raccourci sans touche n'a pas d'inscription
+    for i = #hints, 1, -1 do
+      if app.keys.open[hints[i].key] == "" then table.remove(hints, i) end
+    end
     local hx, hy = x, L.hints_y
     for i, h in ipairs(hints) do
       local need = small:getWidth(h[1]) + (h.icon and 25 * k or 0)
@@ -82,7 +87,8 @@ return function()
     love.graphics.setLineWidth(2)
     theme.color(bg and c.pink or c.sub)
     love.graphics.rectangle("line", x, by, w, bh, bh / 2, bh / 2)
-    theme.print(app.t("background") .. " : " .. app.t(bg and "on" or "off") .. "   ·   L1 + R1",
+    local bg_key = app.keys.open.toggle_background ~= "" and ("   ·   " .. app.key_label("toggle_background")) or ""
+    theme.print(app.t("background") .. " : " .. app.t(bg and "on" or "off") .. bg_key,
       theme.font("Bold", 15), x, by + 9 * k, w, "center")
   end
 
