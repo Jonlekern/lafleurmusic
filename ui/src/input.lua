@@ -4,7 +4,7 @@ In.__index = In
 
 local SIMPLE = {
   a = "ok", b = "back", start = "playpause", select = "now_playing",
-  left = "left", right = "right", up = "up", down = "down", x = "repeat", y = "shuffle",
+  left = "left", right = "right", up = "up", down = "down", x = "repeat", y = "shuffle", menu = "quit",
 }
 local REPEATS = { up = true, down = true }
 local SHOULDER = { l1 = "previous", r1 = "next" }

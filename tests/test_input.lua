@@ -55,6 +55,9 @@ return {
     eq(i:press("y", 0), { "shuffle" })
     eq(i:press("x", 0), { "repeat" })
   end,
+  ["MENU quitte l'appli"] = function()
+    eq(new():press("menu", 0), { "quit" })
+  end,
   ["boutons simples"] = function()
     local i = new()
     eq(i:press("start", 0), { "playpause" })

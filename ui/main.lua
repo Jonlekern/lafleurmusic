@@ -103,6 +103,9 @@ local function global_action(a)
     local cur = app.current()
     if not cur.is_nowplaying and app.songs and #app.songs > 0 then app.push(require("screens.nowplaying")()) end
     return true
+  elseif a == "quit" then
+    app.quit()
+    return true
   elseif a == "shuffle" then
     local PM = require("playmode")
     local cmd = PM.shuffle_command(app.mpd:status())
@@ -139,7 +142,7 @@ local function dispatch(actions)
 end
 
 local PAD = {
-  a = "a", b = "b", x = "x", y = "y", start = "start", back = "select", leftshoulder = "l1", rightshoulder = "r1",
+  a = "a", b = "b", x = "x", y = "y", guide = "menu", start = "start", back = "select", leftshoulder = "l1", rightshoulder = "r1",
   dpup = "up", dpdown = "down", dpleft = "left", dpright = "right",
 }
 local KEYS = {
