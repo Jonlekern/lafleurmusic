@@ -33,6 +33,9 @@ alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null && grep -qa "$2" "/pr
 # sinon le pilote graphique de LÖVE plante. /usr/lib/compat : compatibilité ROCKNIX (libtheoradec…).
 MPD_LIBS="$APP/engine/libs:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$APP/bin/libs:/usr/lib/compat:$LD_LIBRARY_PATH"
+# Diagnostic : tous les programmes qui peuvent jouer du son au moment du lancement.
+say "lecteurs en route :"
+ps w 2>/dev/null | grep -iE "mpd|gmu|mpv|ffplay|aplay|mplayer|rockbox|love|lafleur|librespot|songo|pw-play" | grep -v grep
 # Correspondance des boutons de la console pour SDL, générée comme le fait PortMaster.
 PADDB=/tmp/lafleur-gamecontrollerdb.txt
 if [ -x /storage/.config/PortMaster/mapper.txt ]; then
