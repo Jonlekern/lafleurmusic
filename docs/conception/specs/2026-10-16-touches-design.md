@@ -43,7 +43,7 @@ avec un réglage pour le **clapet ouvert** et un autre pour le **clapet fermé**
 
 Touches utilisables :
 - **clapet ouvert** : X, Y, START, SELECT, L1, R1, L2, R2, seules ou par deux ;
-- **clapet fermé** : les mêmes + A, B et la croix, toujours par deux.
+- **clapet fermé** : L1, R1, L2, R2 seulement (relevé sur la console : les autres touches sont inaccessibles clapet fermé), toujours par deux.
 
 Fixes clapet ouvert : croix, A = Valider, B = Retour, MENU = Quitter. « A/B inversés » échange Valider et Retour.
 

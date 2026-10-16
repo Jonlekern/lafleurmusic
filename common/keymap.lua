@@ -12,10 +12,8 @@ K.DEFAULTS = {
 }
 
 local BASE = { x = true, y = true, start = true, select = true, l1 = true, r1 = true, l2 = true, r2 = true }
-local USABLE = {
-  open = BASE,
-  closed = setmetatable({ a = true, b = true, up = true, down = true, left = true, right = true }, { __index = BASE }),
-}
+-- Clapet fermé, seules les gâchettes restent accessibles (relevé sur la RG SP).
+local USABLE = { open = BASE, closed = { l1 = true, r1 = true, l2 = true, r2 = true } }
 local NAMES = { up = "↑", down = "↓", left = "←", right = "→" }
 
 local function actions_of(side) return side == "open" and K.ACTIONS or K.CLOSED_ACTIONS end

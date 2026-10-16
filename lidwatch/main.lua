@@ -58,13 +58,24 @@ local function main()
     if f then f:write(pid) f:close() end
   end
 
-  local device = os.getenv("LAFLEUR_LID_DEVICE") or lid.find_device(read_file("/proc/bus/input/devices"))
+  local devices = read_file("/proc/bus/input/devices")
+  local device = os.getenv("LAFLEUR_LID_DEVICE") or lid.find_device(devices)
   if not device then return "aucun interrupteur de clapet trouvé" end
   log("clapet : " .. device)
 
   local channel = love.thread.getChannel("lid")
   local thread = love.thread.newThread("src/reader_thread.lua")
-  thread:start(device)
+  thread:start(device, "lid")
+  local pad = lid.find_gamepad(devices)
+  local pad_thread
+  if pad then
+    log("manette : " .. pad)
+    pad_thread = love.thread.newThread("src/reader_thread.lua")
+    pad_thread:start(pad, "pad")
+  else
+    log("manette introuvable : pas de touches clapet fermé")
+  end
+  local logged_keys = 0
 
   local mpd = C.new({ port = tonumber(os.getenv("LAFLEUR_MPD_PORT") or "6601") })
   local closed, state, misses, next_poll, paused_by_us = false, nil, 0, 0, false
@@ -73,8 +84,16 @@ local function main()
     local msg = channel:pop()
     while msg do
       if msg:match("^error") then return msg end
-      closed = (msg == "closed")
-      next_poll = 0 -- relire l'état de lecture tout de suite après un mouvement du clapet
+      local code, value = msg:match("^key:(%d+):(%-?%d+)")
+      if code then
+        if logged_keys < 60 and value ~= "2" then
+          logged_keys = logged_keys + 1
+          log("touche " .. code .. " " .. value .. (closed and " (clapet fermé)" or ""))
+        end
+      else
+        closed = (msg == "closed")
+        next_poll = 0 -- relire l'état de lecture tout de suite après un mouvement du clapet
+      end
       msg = channel:pop()
     end
     local now = love.timer.getTime()

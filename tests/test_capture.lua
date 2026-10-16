@@ -24,10 +24,9 @@ return {
     c:press("r1", 1)
     eq(c:press("r2", 1.05), { done = "r1+r2" })
   end,
-  ["fermé : la croix compte"] = function()
-    local c = Cap.new("closed", 0)
-    c:press("up", 1)
-    eq(c:press("a", 1.05), { done = "a+up" })
+  ["fermé : la croix et A sont réservées (inaccessibles clapet fermé)"] = function()
+    eq(Cap.new("closed", 0):press("up", 1), { reserved = true })
+    eq(Cap.new("closed", 0):press("a", 1), { reserved = true })
   end,
   ["ouvert : touche fixe réservée"] = function()
     eq(Cap.new("open", 0):press("a", 1), { reserved = true })

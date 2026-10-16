@@ -25,10 +25,12 @@ return {
     eq({ K.assign(km, "closed", "next", "r1") }, { false, "reserved" })
     eq(km.closed.next, "r1+r2")
   end,
-  ["clapet fermé accepte A + B"] = function()
+  ["clapet fermé : seulement les gâchettes"] = function()
     local km = K.load({})
-    eq(K.assign(km, "closed", "shuffle", "b+a"), true)
-    eq(km.closed.shuffle, "a+b")
+    eq({ K.assign(km, "closed", "shuffle", "b+a") }, { false, "reserved" })
+    eq({ K.assign(km, "closed", "shuffle", "l1+x") }, { false, "reserved" })
+    eq(K.assign(km, "closed", "shuffle", "r2+l1"), true)
+    eq(km.closed.shuffle, "l1+r2")
   end,
   ["conflit = échange"] = function()
     local km = K.load({})
