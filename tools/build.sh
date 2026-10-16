@@ -27,5 +27,6 @@ cp ui/assets/fonts/LICENSE.txt "$OUT/licenses/Inter-OFL.txt"
 cp "launcher/LAFLEUR Music.sh" "$OUT/LAFLEUR Music.sh"
 chmod +x "$OUT/LAFLEUR Music.sh"
 
+xattr -cr "$OUT" # sinon macOS crée des fichiers ._* sur le partage
 find "$OUT" -name '._*' -delete
 echo "build prêt : $OUT ($(du -sh "$OUT" | cut -f1))"
