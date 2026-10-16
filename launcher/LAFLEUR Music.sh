@@ -22,7 +22,13 @@ exec >> "$LOG" 2>&1
 say() { echo "$(date '+%H:%M:%S') [launcher] $*"; }
 alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null; }
 
-export LD_LIBRARY_PATH="$APP/engine/libs:$APP/bin/libs:$LD_LIBRARY_PATH"
+# /usr/lib/compat : bibliothèques de compatibilité de ROCKNIX (libtheoradec… pour LÖVE), comme PortMaster.
+export LD_LIBRARY_PATH="$APP/engine/libs:$APP/bin/libs:/usr/lib/compat:$LD_LIBRARY_PATH"
+# Correspondance des boutons de la console pour SDL, générée comme le fait PortMaster.
+PADDB=/tmp/lafleur-gamecontrollerdb.txt
+if [ -x /storage/.config/PortMaster/mapper.txt ]; then
+  /storage/.config/PortMaster/mapper.txt "$PADDB" /storage/roms/ports/PortMaster && export SDL_GAMECONTROLLERCONFIG_FILE="$PADDB"
+fi
 export XDG_DATA_HOME="$APP/conf"
 export LAFLEUR_APPDIR="$APP"
 
