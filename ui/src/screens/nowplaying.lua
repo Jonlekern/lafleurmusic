@@ -47,12 +47,22 @@ return function()
     theme.color(c.sub)
     theme.print(clock(elapsed), theme.font("Regular", 16), x, 322, 100)
     theme.print("-" .. clock(duration - elapsed), theme.font("Regular", 16), x + w - 100, 322, 100, "right")
+    -- Aléatoire (Y) · Répéter (X) · Pause/Lecture (START), à la suite sur une ligne
     local small = theme.font("Regular", 16)
-    theme.color(st.random == "1" and c.pink or c.sub)
-    theme.print(app.t("shuffle") .. "  (Y)", small, x, 372, 150)
     local mode = require("playmode").repeat_mode(st)
-    theme.color(mode ~= "off" and c.pink or c.sub)
-    theme.print(app.t("repeat") .. (mode ~= "off" and (" : " .. app.t("repeat_" .. mode)) or "") .. "  (X)", small, x + 150, 372, 210)
+    local hints = {
+      { app.t("shuffle") .. " (Y)", st.random == "1" },
+      { app.t("repeat") .. (mode ~= "off" and (" : " .. app.t("repeat_" .. mode)) or "") .. " (X)", mode ~= "off" },
+      { app.t(st.state == "play" and "pause" or "play") .. " (START)", false },
+    }
+    local hx = x
+    for _, h in ipairs(hints) do
+      local room = x + w - hx
+      if room <= 20 then break end
+      theme.color(h[2] and c.pink or c.sub)
+      theme.print(h[1], small, hx, 372, room)
+      hx = hx + math.min(room, small:getWidth(h[1])) + 22
+    end
     local bg = S.read_background(app.state_dir) == "on"
     theme.color(bg and { 40 / 255, 20 / 255, 40 / 255 } or { 0.12, 0.12, 0.12 })
     love.graphics.rectangle("fill", x, 420, w, 36, 18, 18)

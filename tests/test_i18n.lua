@@ -27,6 +27,11 @@ return {
     eq(I.t("fr", "repeat_one"), "Un seul")
     eq(I.t("en", "repeat_all"), "All")
   end,
+  ["indication du bouton START"] = function()
+    eq(I.t("fr", "pause"), "Pause")
+    eq(I.t("fr", "play"), "Lecture")
+    eq(I.t("en", "play"), "Play")
+  end,
   ["chaque clé existe dans les deux langues"] = function()
     for key in pairs(I.strings.fr) do truthy(I.strings.en[key], "en manque " .. key) end
     for key in pairs(I.strings.en) do truthy(I.strings.fr[key], "fr manque " .. key) end
