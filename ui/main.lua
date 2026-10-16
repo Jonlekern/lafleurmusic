@@ -140,7 +140,19 @@ local function global_action(a)
   return false
 end
 
+-- Clapet fermé : c'est le gardien qui traite les touches ; l'interface ignore tout (state/lid, relu toutes les 0,2 s).
+local lid_checked, lid_is_closed = -1, false
+local function lid_closed()
+  local t = love.timer.getTime()
+  if t - lid_checked >= 0.2 then
+    lid_checked = t
+    lid_is_closed = (read_file(app.state_dir .. "/lid") or ""):match("^closed") ~= nil
+  end
+  return lid_is_closed
+end
+
 local function dispatch(actions)
+  if #actions > 0 and lid_closed() then return end
   for _, a in ipairs(actions) do
     local cur = app.current()
     -- les touches globales ne s'appliquent qu'une fois l'appli prête
@@ -162,13 +174,13 @@ local logged_buttons = 0
 
 -- Un écran en train de capturer une touche (Touches) reçoit les boutons bruts.
 local function press(btn)
-  if not btn then return end
+  if not btn or lid_closed() then return end
   local t, cur = love.timer.getTime(), app.current()
   if cur.raw_press and cur.raw_press(btn, t) then return end
   dispatch(input:press(btn, t))
 end
 local function release(btn)
-  if not btn then return end
+  if not btn or lid_closed() then return end
   local t, cur = love.timer.getTime(), app.current()
   if cur.raw_release and cur.raw_release(btn, t) then return end
   dispatch(input:release(btn, t))
