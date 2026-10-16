@@ -25,7 +25,9 @@ done
 : > "$LOG"
 exec >> "$LOG" 2>&1
 say() { echo "$(date '+%H:%M:%S') [launcher] $*"; }
-alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null; }
+# Le pid est sur la carte système : après un redémarrage il peut désigner un autre programme,
+# on vérifie donc aussi le nom du programme ($2).
+alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null && grep -qa "$2" "/proc/$(cat "$1")/cmdline"; }
 
 # Bibliothèques séparées : celles du port MPD (dont une vieille libdrm) ne doivent servir qu'à MPD,
 # sinon le pilote graphique de LÖVE plante. /usr/lib/compat : compatibilité ROCKNIX (libtheoradec…).
@@ -40,7 +42,7 @@ export XDG_DATA_HOME="$APP/conf"
 export LAFLEUR_APPDIR="$APP"
 export LAFLEUR_STATE_DIR="$STATE"
 
-if alive "$STATE/pid"; then
+if alive "$STATE/pid" mpd; then
   say "MPD déjà en route"
 elif LD_LIBRARY_PATH="$MPD_LIBS" "$APP/engine/mpd" "$APP/engine/mpd.conf"; then
   say "MPD démarré"
@@ -48,7 +50,7 @@ else
   say "MPD n'a pas démarré"
 fi
 
-if alive "$STATE/lidwatch.pid"; then
+if alive "$STATE/lidwatch.pid" lafleur-lid; then
   say "gardien déjà en route"
 else
   (cd "$APP/lidwatch" && exec "$APP/bin/lafleur-lid" .) &
@@ -61,7 +63,7 @@ cd "$APP/ui" && "$APP/bin/lafleur-ui" .
 say "interface terminée (code $?)"
 
 if [ "$(cat "$STATE/background" 2>/dev/null)" != "on" ]; then
-  alive "$STATE/lidwatch.pid" && kill "$(cat "$STATE/lidwatch.pid")"
+  alive "$STATE/lidwatch.pid" lafleur-lid && kill "$(cat "$STATE/lidwatch.pid")"
   rm -f "$STATE/lidwatch.pid"
   echo 0 > "$BL"
   LD_LIBRARY_PATH="$MPD_LIBS" "$APP/engine/mpd" --kill "$APP/engine/mpd.conf" && say "MPD arrêté (arrière-plan OFF)"
