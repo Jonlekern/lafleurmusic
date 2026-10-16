@@ -35,4 +35,10 @@ return {
   ["OFF : clapet fermé déjà en pause → écran éteint, pas de reprise prévue"] = function()
     eq(d(true, "off", "pause", false), { false, nil, false })
   end,
+  ["OFF : relancé clapet fermé, le gardien ne remet pas en pause"] = function()
+    eq(d(true, "off", "play", false, true), { false, nil, false })
+  end,
+  ["OFF : sans relance, clapet fermé en lecture = pause"] = function()
+    eq(d(true, "off", "play", false, false), { false, "pause", true })
+  end,
 }

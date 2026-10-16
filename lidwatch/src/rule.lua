@@ -9,10 +9,12 @@ end
 -- Renvoie screen_on, action ("pause" | "resume" | nil), paused_by_us.
 -- Arrière-plan OFF : clapet fermé = pause + écran éteint ; à l'ouverture, reprise seulement
 -- si c'est le gardien qui avait mis en pause.
-function rule.decide(lid_closed, background, state, paused_by_us)
+-- user_override : l'utilisateur a relancé la musique clapet fermé (touches) → pas de nouvelle pause.
+function rule.decide(lid_closed, background, state, paused_by_us, user_override)
   if background == "on" then
     return rule.screen_on(lid_closed, background, state), nil, false
   end
+  if lid_closed and user_override then return false, nil, false end
   if lid_closed then
     if state == "play" then return false, "pause", true end
     return false, nil, paused_by_us
