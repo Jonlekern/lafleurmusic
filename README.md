@@ -1,52 +1,50 @@
 # LAFLEURMUSIC
 
-Lecteur de musique façon **iPod Classic 6G** pour consoles portables sous **ROCKNIX**, aux couleurs de **LAFLEURSTUDIO**.
-Menus iPod, **Cover Flow**, lecture **en arrière-plan** pendant les jeux, écran éteint clapet fermé.
+An **iPod Classic (6th gen)–style music player** for **ROCKNIX** handhelds, in the **LAFLEURSTUDIO** look.
+iPod menus, **Cover Flow**, **background playback** while you play games, and the screen turns off when you close the lid.
 
-*An iPod Classic–style music player for ROCKNIX handhelds: iPod menus, Cover Flow, background playback while gaming, screen off when the lid is closed. French and English UI.*
+![LAFLEURMUSIC — main menu, Cover Flow, Now Playing](docs/images/maquettes.png)
 
-![LAFLEURMUSIC — menu, Cover Flow, En cours](docs/images/maquettes.png)
+## Features
 
-## Fonctions
+- Main menu: Cover Flow, Playlists (albums), Artists, Songs, Genres, Shuffle Songs, Now Playing, Settings.
+- **Cover Flow** of your albums with their artwork (embedded cover art, cached on the card).
+- **Background mode** (L1 + R1): ON keeps the music playing after you quit the app, even in games; OFF (default) stops the music when you quit.
+- **Lid**: background ON → screen off, music keeps playing; background OFF → pause and screen off, resumes when you open it.
+- UI in **English** or **French**, following the console language.
 
-- Menu principal : Cover Flow, Playlists (albums), Artistes, Morceaux, Genres, Lecture aléatoire, En cours, Réglages.
-- **Cover Flow** des albums avec leurs pochettes (pochettes intégrées aux fichiers, mises en cache).
-- **Arrière-plan** (L1 + R1) : ON, la musique continue après avoir quitté l'appli, même en jeu ; OFF (par défaut), quitter arrête la musique.
-- **Clapet** : ON → écran éteint, la musique continue ; OFF → pause et écran éteint, reprise à l'ouverture.
-- Interface en **français** ou en **anglais**, selon la langue de la console.
+## Controls
 
-## Touches
-
-| Touche | Action |
+| Button | Action |
 |---|---|
-| Croix | naviguer (← → : morceau précédent / suivant dans En cours) |
-| A / B | ouvrir / retour |
-| START | lecture / pause |
-| SELECT | aller à En cours |
-| L1 / R1 | morceau précédent / suivant |
-| L1 + R1 | Arrière-plan ON / OFF |
-| Y / X | aléatoire / répéter (off → tout → un seul) |
-| MENU | quitter |
+| D-pad | navigate (← → skip tracks in Now Playing) |
+| A / B | open / back |
+| START | play / pause |
+| SELECT | go to Now Playing |
+| L1 / R1 | previous / next track |
+| L1 + R1 | background mode ON / OFF |
+| Y / X | shuffle / repeat (off → all → one) |
+| MENU | quit |
 
-## Comment ça marche
+## How it works
 
-- **Moteur audio** : MPD 0.23 (binaire aarch64 du port PortMaster « Music Player Daemon »), qui joue en arrière-plan.
-- **Interface** : LÖVE 11.5 (Lua), qui pilote MPD en TCP sur `127.0.0.1:6601`.
-- **Gardien du clapet** (`lidwatch/`) : petite appli LÖVE sans fenêtre qui lit l'interrupteur du clapet et gère l'écran.
-- La musique est lue dans `/storage/roms/music`.
+- **Audio engine**: MPD 0.23 (the aarch64 binary from the PortMaster "Music Player Daemon" port), which keeps playing in the background.
+- **UI**: LÖVE 11.5 (Lua), talking to MPD over TCP on `127.0.0.1:6601`.
+- **Lid watcher** (`lidwatch/`): a small windowless LÖVE app that reads the lid switch and controls the backlight.
+- Music is read from `/storage/roms/music`.
 
-Testé sur **Anbernic RG SP** (720×480) avec **ROCKNIX 20261001**. Les autres tailles d'écran sont en préparation.
+Tested on the **Anbernic RG SP** (720×480) with **ROCKNIX 20261001**. Other screen sizes are in progress.
 
-## Installation (depuis un Mac ou un PC sur le même Wi-Fi)
+## Install (from a Mac or PC on the same Wi-Fi)
 
-1. Sur la console : activer **Samba** (START > Network Settings > Enable Samba).
-2. `tools/fetch-vendor.sh` : télécharge MPD et LÖVE depuis les releases officielles PortMaster (vérification md5).
-3. `tools/build.sh` : assemble `build/lafleur-music/`.
-4. `RGSP_HOST=<ip de la console> tools/install.sh` : copie l'appli dans `/storage/roms/lafleur-music/` et le lanceur dans le menu **Music**.
-5. Sur la console : START > Game Settings > Update Gamelists, puis **Music > LAFLEURMUSIC**.
+1. On the console, enable **Samba** (START > Network Settings > Enable Samba).
+2. `tools/fetch-vendor.sh` downloads MPD and LÖVE from the official PortMaster releases (md5 checked).
+3. `tools/build.sh` assembles `build/lafleur-music/`.
+4. `RGSP_HOST=<console ip> tools/install.sh` copies the app to `/storage/roms/lafleur-music/` and the launcher into the **Music** menu.
+5. On the console: START > Game Settings > Update Gamelists, then **Music > LAFLEURMUSIC**.
 
-Pour que le clapet ne mette pas la console en veille (la musique s'arrêterait), ajouter dans
-`/storage/.config/logind.conf.d/80-lafleur-clapet.conf` :
+So that closing the lid does not suspend the console (which would stop the music), add
+`/storage/.config/logind.conf.d/80-lafleur-clapet.conf`:
 
 ```ini
 [Login]
@@ -61,11 +59,11 @@ HandleLidSwitchDocked=ignore
 luajit tests/run.lua
 ```
 
-La logique (protocole MPD, bibliothèque, langue, réglages, touches, Cover Flow, clapet) est testée sous LuaJIT ; l'interface se vérifie sur la console.
+The logic (MPD protocol, library, language, settings, buttons, Cover Flow, lid) is tested with LuaJIT; the UI is checked on the console.
 
-## Licences
+## Licenses
 
-- **Code** : MIT, voir [LICENSE](LICENSE).
-- **Logos et marque LAFLEURSTUDIO / LAFLEURMUSIC** (`ui/assets/fleur*.png`, `ui/assets/logo-texte*.png`, `docs/images/`) : © LAFLEURSTUDIO, tous droits réservés. Ils ne sont **pas** couverts par la licence MIT.
-- **Inter** (`ui/assets/fonts/`) : SIL Open Font License 1.1.
-- **MPD** (GPL-2.0) et **LÖVE** (zlib) ne sont pas inclus dans ce dépôt : `tools/fetch-vendor.sh` les télécharge depuis PortMaster, avec leurs licences.
+- **Code**: MIT, see [LICENSE](LICENSE).
+- **LAFLEURSTUDIO / LAFLEURMUSIC logos and brand** (`ui/assets/fleur*.png`, `ui/assets/logo-texte*.png`, `docs/images/`): © LAFLEURSTUDIO, all rights reserved. They are **not** covered by the MIT license.
+- **Inter** (`ui/assets/fonts/`): SIL Open Font License 1.1.
+- **MPD** (GPL-2.0) and **LÖVE** (zlib) are not included in this repository: `tools/fetch-vendor.sh` downloads them from PortMaster, together with their licenses.
