@@ -32,6 +32,9 @@ function K.normalize(a, b)
   return a .. "+" .. b
 end
 
+-- Touche utilisable seule ou dans une combinaison de ce côté.
+function K.usable(side, btn) return USABLE[side][btn] == true end
+
 -- "" (aucune touche) est toujours valable ; clapet fermé, il faut deux touches.
 function K.valid(side, combo)
   if combo == "" then return true end
