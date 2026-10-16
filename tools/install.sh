@@ -22,7 +22,7 @@ CONFIG=$(share config)
 export COPYFILE_DISABLE=1
 DEST="$ROMS/lafleur-music"
 mkdir -p "$DEST"
-rsync -rt --inplace --exclude='._*' --exclude='.DS_Store' build/lafleur-music/ "$DEST/"
+rsync -rt --checksum --inplace --exclude='._*' --exclude='.DS_Store' build/lafleur-music/ "$DEST/"
 cp "build/lafleur-music/LAFLEUR Music.sh" "$CONFIG/gmu/playlists/LAFLEUR Music.sh"
 find "$DEST" "$CONFIG/gmu/playlists" -name '._*' -delete
 
