@@ -59,13 +59,15 @@ else
   say "MPD n'a pas démarré"
 fi
 
-if alive "$STATE/lidwatch.pid" lafleur-lid; then
-  say "gardien déjà en route"
-else
-  (cd "$APP/lidwatch" && exec "$APP/bin/lafleur-lid" .) &
-  echo $! > "$STATE/lidwatch.pid"
-  say "gardien démarré"
-fi
+# Un seul gardien : on arrête ceux qui traîneraient (le pid enregistré ne suffit pas toujours).
+for d in /proc/[0-9]*; do
+  case "$(tr '\0' ' ' < "$d/cmdline" 2>/dev/null)" in
+    *bin/lafleur-lid*) kill "${d#/proc/}" 2>/dev/null && say "ancien gardien ${d#/proc/} arrêté" ;;
+  esac
+done
+(cd "$APP/lidwatch" && exec "$APP/bin/lafleur-lid" .) &
+echo $! > "$STATE/lidwatch.pid"
+say "gardien démarré"
 
 set_kill set "lafleur-ui"
 cd "$APP/ui" && "$APP/bin/lafleur-ui" .
