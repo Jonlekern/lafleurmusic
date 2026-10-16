@@ -12,7 +12,10 @@ return function()
   local s = { ready = true, is_nowplaying = true }
 
   function s.action(a)
-    if a == "back" or a == "ok" then app.pop() end
+    if a == "back" or a == "ok" then app.pop()
+    elseif a == "left" then app.mpd:command("previous")
+    elseif a == "right" then app.mpd:command("next")
+    end
   end
 
   function s.draw()

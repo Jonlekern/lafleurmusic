@@ -181,6 +181,13 @@ function love.update(dt)
       status_timer = 0.5
       app.status = app.mpd:status()
       app.song = app.mpd:currentsong()
+      -- MPD indexe encore la carte (premier lancement, ajout de morceaux) : recharger quand il a fini.
+      local scanning = app.status and app.status.updating_db ~= nil
+      if app.was_scanning and not scanning and app.status then
+        app.reload_library()
+        app.stack[1] = require("screens.menu")() -- menu reconstruit avec la bibliothèque complète
+      end
+      app.was_scanning = scanning
     end
   end
   battery_timer = battery_timer - dt
