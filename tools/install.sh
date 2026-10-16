@@ -37,5 +37,5 @@ cp -X "build/lafleur-music/LAFLEURMUSIC.sh" "$CONFIG/gmu/playlists/LAFLEURMUSIC.
 find "$DEST" "$CONFIG/gmu/playlists" -name '._*' -delete
 
 find "$DEST" "$CONFIG/gmu/playlists" -name '._*' -delete
-diff -rq -x state -x cache -x conf -x log.txt -x settings.txt build/lafleur-music "$DEST" && echo "installé, copie identique"
+diff -rq -x '._*' -x state -x cache -x conf -x log.txt -x settings.txt build/lafleur-music "$DEST" && echo "installé, copie identique"
 cmp "build/lafleur-music/LAFLEURMUSIC.sh" "$CONFIG/gmu/playlists/LAFLEURMUSIC.sh" && echo "lanceur en place"
