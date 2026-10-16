@@ -13,10 +13,15 @@ if [ ! -d "$APP" ]; then
   exit 0
 fi
 
-STATE="$APP/engine/state"
+STATE=/storage/.config/lafleur-music/state  # carte système (ext4), plus sûre que l'exFAT de TF2
 LOG="$APP/log.txt"
 BL=/sys/class/backlight/backlight/bl_power
 mkdir -p "$STATE/playlists" "$APP/conf" "$APP/cache/covers"
+# ancien emplacement (sur TF2) : on reprend la base MPD et la position de lecture une fois
+OLD="$APP/engine/state"
+for f in database state; do
+  [ -f "$OLD/$f" ] && [ ! -f "$STATE/$f" ] && cp "$OLD/$f" "$STATE/$f"
+done
 : > "$LOG"
 exec >> "$LOG" 2>&1
 say() { echo "$(date '+%H:%M:%S') [launcher] $*"; }
@@ -33,6 +38,7 @@ if [ -x /storage/.config/PortMaster/mapper.txt ]; then
 fi
 export XDG_DATA_HOME="$APP/conf"
 export LAFLEUR_APPDIR="$APP"
+export LAFLEUR_STATE_DIR="$STATE"
 
 if alive "$STATE/pid"; then
   say "MPD déjà en route"

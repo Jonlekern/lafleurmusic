@@ -8,7 +8,7 @@ local S = require("settings")
 local C = require("mpd_client")
 
 local APPDIR = os.getenv("LAFLEUR_APPDIR") or "/storage/roms/lafleur-music"
-local STATE = APPDIR .. "/engine/state"
+local STATE = os.getenv("LAFLEUR_STATE_DIR") or (APPDIR .. "/engine/state")
 local BL_POWER = os.getenv("LAFLEUR_BL_POWER") or "/sys/class/backlight/backlight/bl_power"
 local POLL, TICK, MAX_MISSES = 2, 0.1, 3
 

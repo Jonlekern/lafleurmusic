@@ -23,7 +23,7 @@ end
 
 app = {
   appdir = APPDIR,
-  state_dir = APPDIR .. "/engine/state",
+  state_dir = os.getenv("LAFLEUR_STATE_DIR") or (APPDIR .. "/engine/state"),
   settings_path = APPDIR .. "/settings.txt",
   stack = {},
   songs = {},
