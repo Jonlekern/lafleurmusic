@@ -1,7 +1,8 @@
--- Disposition du Cover Flow sur 720×480 (valeurs de maquettes/2-coverflow.png).
+-- Disposition du Cover Flow : valeurs de la maquette 720×480, mises à l'échelle et centrées pour W×H.
+local Lay = require("layout")
 local CF = {}
 
-local Y, H, CENTER_W, SIDE_W = 70, 240, 240, 110
+local Y, CH, CENTER_W, SIDE_W = 70, 240, 240, 110
 -- x du bord gauche pour un écart d = index - pos de -3 à +3.
 local SLOT_X = { [-3] = 20, [-2] = 75, [-1] = 130, [0] = 240, [1] = 480, [2] = 535, [3] = 590 }
 local SPEED = 12
@@ -16,14 +17,16 @@ local function slot(d)
   return x0 + (x1 - x0) * f, w0 + (w1 - w0) * f
 end
 
-function CF.layout(pos, count)
+function CF.layout(pos, count, W, H)
+  W, H = W or 720, H or 480
+  local k = Lay.scale(W, H)
   local out = {}
   for index = 1, count do
     local d = index - pos
     if d >= -3 and d <= 3 then
       local x, w = slot(d)
       local side = math.abs(d) < 0.5 and "center" or (d < 0 and "left" or "right")
-      out[#out + 1] = { index = index, x = x, y = Y, w = w, h = H, side = side, dist = math.abs(d) }
+      out[#out + 1] = { index = index, x = W / 2 + (x - 360) * k, y = Y * k, w = w * k, h = CH * k, side = side, dist = math.abs(d) }
     end
   end
   table.sort(out, function(a, b) return a.dist > b.dist end)

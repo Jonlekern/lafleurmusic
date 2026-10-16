@@ -33,6 +33,19 @@ return {
     local l = CF.layout(2.6, 6)
     eq(l[#l].index, 3)
   end,
+  ["à l'échelle en 1280x720 : centré et agrandi"] = function()
+    local l = CF.layout(4, 7, 1280, 720)
+    local c = l[#l]
+    eq({ c.index, c.x, c.y, c.w, c.h }, { 4, 460, 105, 360, 360 })
+  end,
+  ["sans taille donnée : comme en 720x480"] = function()
+    eq(CF.layout(4, 7), CF.layout(4, 7, 720, 480))
+  end,
+  ["en 720x720 : reste dans l'écran"] = function()
+    for _, e in ipairs(CF.layout(4, 7, 720, 720)) do
+      truthy(e.x >= 0 and e.x + e.w <= 720, "x " .. e.x)
+    end
+  end,
   ["step atteint la cible"] = function()
     eq(CF.step(1, 2, 1), 2)
   end,
