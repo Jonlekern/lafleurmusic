@@ -28,12 +28,12 @@ while IFS= read -r -d '' f; do
   rel="${f#build/lafleur-music/}"
   if ! cmp -s "$f" "$DEST/$rel"; then
     mkdir -p "$(dirname "$DEST/$rel")"
-    cp "$f" "$DEST/$rel"
+    cp -X "$f" "$DEST/$rel"
     changed=$((changed + 1))
   fi
 done < <(find build/lafleur-music -type f ! -name '._*' ! -name '.DS_Store' -print0)
 echo "$changed fichier(s) copié(s)"
-cp "build/lafleur-music/LAFLEURMUSIC.sh" "$CONFIG/gmu/playlists/LAFLEURMUSIC.sh"
+cp -X "build/lafleur-music/LAFLEURMUSIC.sh" "$CONFIG/gmu/playlists/LAFLEURMUSIC.sh"
 find "$DEST" "$CONFIG/gmu/playlists" -name '._*' -delete
 
 diff -rq -x state -x cache -x conf -x log.txt -x settings.txt build/lafleur-music "$DEST" && echo "installé, copie identique"
