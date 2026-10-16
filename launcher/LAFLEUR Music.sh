@@ -22,8 +22,10 @@ exec >> "$LOG" 2>&1
 say() { echo "$(date '+%H:%M:%S') [launcher] $*"; }
 alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null; }
 
-# /usr/lib/compat : bibliothèques de compatibilité de ROCKNIX (libtheoradec… pour LÖVE), comme PortMaster.
-export LD_LIBRARY_PATH="$APP/engine/libs:$APP/bin/libs:/usr/lib/compat:$LD_LIBRARY_PATH"
+# Bibliothèques séparées : celles du port MPD (dont une vieille libdrm) ne doivent servir qu'à MPD,
+# sinon le pilote graphique de LÖVE plante. /usr/lib/compat : compatibilité ROCKNIX (libtheoradec…).
+MPD_LIBS="$APP/engine/libs:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$APP/bin/libs:/usr/lib/compat:$LD_LIBRARY_PATH"
 # Correspondance des boutons de la console pour SDL, générée comme le fait PortMaster.
 PADDB=/tmp/lafleur-gamecontrollerdb.txt
 if [ -x /storage/.config/PortMaster/mapper.txt ]; then
@@ -34,7 +36,7 @@ export LAFLEUR_APPDIR="$APP"
 
 if alive "$STATE/pid"; then
   say "MPD déjà en route"
-elif "$APP/engine/mpd" "$APP/engine/mpd.conf"; then
+elif LD_LIBRARY_PATH="$MPD_LIBS" "$APP/engine/mpd" "$APP/engine/mpd.conf"; then
   say "MPD démarré"
 else
   say "MPD n'a pas démarré"
@@ -56,7 +58,7 @@ if [ "$(cat "$STATE/background" 2>/dev/null)" != "on" ]; then
   alive "$STATE/lidwatch.pid" && kill "$(cat "$STATE/lidwatch.pid")"
   rm -f "$STATE/lidwatch.pid"
   echo 0 > "$BL"
-  "$APP/engine/mpd" --kill "$APP/engine/mpd.conf" && say "MPD arrêté (arrière-plan OFF)"
+  LD_LIBRARY_PATH="$MPD_LIBS" "$APP/engine/mpd" --kill "$APP/engine/mpd.conf" && say "MPD arrêté (arrière-plan OFF)"
 else
   say "arrière-plan ON : la musique continue"
 fi
