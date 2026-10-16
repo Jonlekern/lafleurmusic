@@ -10,15 +10,22 @@ return function(opts)
   local L = Lay.list(theme.W, theme.H)
   local VISIBLE = L.rows
 
-  local function clamp()
+  local function clamp(dir)
     local n = #s.items
     if n == 0 then s.sel = 1 return end
     s.sel = math.max(1, math.min(n, s.sel))
+    -- un titre de section ne se sélectionne pas : on continue dans le même sens
+    while s.items[s.sel] and s.items[s.sel].header do
+      local nxt = s.sel + (dir or 1)
+      if nxt < 1 or nxt > n then dir = -(dir or 1) nxt = s.sel + dir end
+      s.sel = nxt
+    end
     if s.sel < s.top then s.top = s.sel end
     if s.sel > s.top + VISIBLE - 1 then s.top = s.sel - VISIBLE + 1 end
   end
 
   function s.action(a)
+    local dir = (a == "up" or a == "left") and -1 or 1
     if a == "up" then s.sel = s.sel - 1
     elseif a == "down" then s.sel = s.sel + 1
     elseif a == "left" then s.sel = s.sel - VISIBLE
@@ -29,7 +36,7 @@ return function(opts)
     elseif a == "back" then
       if opts.on_back then opts.on_back() else app.pop() end
     end
-    clamp()
+    clamp(dir)
   end
 
   function s.draw()
@@ -42,6 +49,11 @@ return function(opts)
       local y = L.bar + (i - s.top) * ROW_H
       local ty = y + (ROW_H - row_font:getHeight()) / 2
       local selected = i == s.sel
+      if it.header then
+        theme.color(c.sub)
+        theme.print(it.label, theme.font("Bold", 15), 22 * k, y + (ROW_H - theme.font("Bold", 15):getHeight()) / 2 + 6 * k, LIST_W - 44 * k)
+        goto continue
+      end
       if selected then
         theme.color(c.pink)
         love.graphics.rectangle("fill", 0, y, LIST_W, ROW_H)
@@ -55,6 +67,7 @@ return function(opts)
       elseif it.on_ok then
         theme.print("›", chev_font, LIST_W - 50 * k, y + (ROW_H - chev_font:getHeight()) / 2, 32 * k, "right")
       end
+      ::continue::
     end
     -- barre de défilement
     if #s.items > VISIBLE then
