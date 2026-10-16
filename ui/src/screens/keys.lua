@@ -19,18 +19,34 @@ return function()
       }
     end
   end
-  section("open", K.ACTIONS)
-  items[#items + 1] = {
-    label = app.t("ab_swap"),
-    value = function() return app.t(km.ab_swap and "on" or "off") end,
-    on_ok = function() km.ab_swap = not km.ab_swap; app.apply_keys() end,
-  }
-  section("closed", K.CLOSED_ACTIONS)
+  local s
+  local function build()
+    items = {}
+    section("open", K.ACTIONS)
+    items[#items + 1] = {
+      label = app.t("ab_swap"),
+      value = function() return app.t(km.ab_swap and "on" or "off") end,
+      on_ok = function() km.ab_swap = not km.ab_swap; app.apply_keys() end,
+    }
+    -- Clapet ON : la section clapet fermé apparaît en dessous (consoles sans clapet : OFF).
+    items[#items + 1] = {
+      label = app.t("has_lid"),
+      value = function() return app.t(km.has_lid and "on" or "off") end,
+      on_ok = function()
+        km.has_lid = not km.has_lid
+        app.apply_keys()
+        build()
+        s.items = items
+      end,
+    }
+    if km.has_lid then section("closed", K.CLOSED_ACTIONS) end
   items[#items + 1] = {
     label = app.t("reset_keys"), value = function() return "" end,
     on_ok = function() K.reset(km, "open"); K.reset(km, "closed"); app.apply_keys() end,
   }
-  local s = list({ title = app.t("keys"), items = items })
+  end
+  build()
+  s = list({ title = app.t("keys"), items = items })
 
   local function finish(r)
     if not r then return end

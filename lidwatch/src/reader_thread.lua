@@ -1,6 +1,6 @@
 -- Fil de lecture bloquante d'un périphérique evdev, sur le canal « lid » :
 -- mode "lid" → "closed" / "open" ; mode "pad" → "key:<code>:<valeur>".
-love.filesystem.setRequirePath("?.lua;src/?.lua")
+love.filesystem.setRequirePath("?.lua;src/?.lua;common/?.lua")
 local lid = require("lid")
 local device, mode = ...
 local channel = love.thread.getChannel("lid")

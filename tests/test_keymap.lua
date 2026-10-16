@@ -70,4 +70,14 @@ return {
     K.reset(km, "open")
     eq(km.open.shuffle, "y")
   end,
+  ["clapet : par défaut selon la console, puis le réglage"] = function()
+    eq(K.load({}, true).has_lid, true)
+    eq(K.load({}, false).has_lid, false)
+    eq(K.load({ has_lid = "off" }, true).has_lid, false)
+    eq(K.load({ has_lid = "on" }, false).has_lid, true)
+    local t, km = {}, K.load({}, true)
+    km.has_lid = false
+    K.store(t, km)
+    eq(t.has_lid, "off")
+  end,
 }

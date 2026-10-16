@@ -52,9 +52,15 @@ local function copy(t)
   return c
 end
 
-function K.load(settings)
+-- lid_default : la console a-t-elle un clapet (détecté) ; le réglage has_lid l'emporte.
+function K.load(settings, lid_default)
   settings = settings or {}
   local km = { ab_swap = settings.ab_swap == "on" }
+  if settings.has_lid == "on" or settings.has_lid == "off" then
+    km.has_lid = settings.has_lid == "on"
+  else
+    km.has_lid = lid_default ~= false
+  end
   for _, side in ipairs({ "open", "closed" }) do
     local map, used = {}, {}
     for _, action in ipairs(actions_of(side)) do
@@ -86,6 +92,7 @@ function K.store(settings, km)
     end
   end
   settings.ab_swap = km.ab_swap and "on" or "off"
+  settings.has_lid = km.has_lid and "on" or "off"
 end
 
 -- Combinaison déjà prise par une autre action → celle-ci reçoit l'ancienne combinaison de `action`.

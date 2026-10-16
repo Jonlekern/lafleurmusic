@@ -92,7 +92,12 @@ local function main()
   local closed, state, misses, next_poll, paused_by_us, override = false, nil, 0, 0, false, false
   write_lid(false)
   local settings_text = read_file(SETTINGS) or ""
-  local combo = Combo.new(K.load(S.load(SETTINGS)).closed)
+  -- Clapet OFF dans les Réglages : pas de raccourcis clapet fermé.
+  local function load_combo()
+    local km = K.load(S.load(SETTINGS), true)
+    return Combo.new(km.has_lid and km.closed or {})
+  end
+  local combo = load_combo()
 
   -- Raccourci clapet fermé → commande MPD.
   local function run(action)
@@ -142,7 +147,7 @@ local function main()
       local text = read_file(SETTINGS) or ""
       if text ~= settings_text then
         settings_text = text
-        combo = Combo.new(K.load(S.load(SETTINGS)).closed)
+        combo = load_combo()
         log("touches clapet fermé relues")
       end
       local st = mpd:status()

@@ -228,7 +228,7 @@ function love.load()
   if f then f:close() end
   app.lang = I.detect(read_file(SYSCFG))
   app.settings = S.load(app.settings_path)
-  app.keys = K.load(app.settings)
+  app.keys = K.load(app.settings, require("lid").find_device(read_file("/proc/bus/input/devices")) ~= nil)
   input:set_bindings(app.keys.open, app.keys.ab_swap)
   -- « Arrière-plan par défaut » : valeur appliquée à chaque lancement.
   pcall(S.write_background, app.state_dir, app.settings.background_default)
