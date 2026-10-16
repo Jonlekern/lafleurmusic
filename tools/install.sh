@@ -1,6 +1,5 @@
 #!/bin/bash
 # Copie build/lafleur-music/ sur la console par le Wi-Fi (partages Samba invités de ROCKNIX)
-# (le partage refuse de renommer par-dessus un fichier existant, et --inplace refuse les nouveaux fichiers)
 # et pose le lanceur dans le menu Music. Ne touche pas à l'état (engine/state, cache, réglages, journal).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -22,9 +21,18 @@ CONFIG=$(share config)
 export COPYFILE_DISABLE=1
 DEST="$ROMS/lafleur-music"
 mkdir -p "$DEST"
-EXCL=(--exclude='._*' --exclude='.DS_Store')
-rsync -rt --ignore-existing "${EXCL[@]}" build/lafleur-music/ "$DEST/"        # nouveaux fichiers
-rsync -rt --checksum --inplace --existing "${EXCL[@]}" build/lafleur-music/ "$DEST/"  # fichiers modifiés
+# Copie fichier par fichier, seulement ce qui a changé : rsync bute sur ce partage
+# (renommage refusé, fichiers en cours d'utilisation).
+changed=0
+while IFS= read -r -d '' f; do
+  rel="${f#build/lafleur-music/}"
+  if ! cmp -s "$f" "$DEST/$rel"; then
+    mkdir -p "$(dirname "$DEST/$rel")"
+    cp "$f" "$DEST/$rel"
+    changed=$((changed + 1))
+  fi
+done < <(find build/lafleur-music -type f ! -name '._*' ! -name '.DS_Store' -print0)
+echo "$changed fichier(s) copié(s)"
 cp "build/lafleur-music/LAFLEURMUSIC.sh" "$CONFIG/gmu/playlists/LAFLEURMUSIC.sh"
 find "$DEST" "$CONFIG/gmu/playlists" -name '._*' -delete
 
