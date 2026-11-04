@@ -35,7 +35,14 @@ iPod menus, **Cover Flow**, **background playback** while you play games, and th
 
 Tested on the **Anbernic RG SP** (720×480) with **ROCKNIX 20261001**. Other screen sizes are in progress.
 
-## Install (from a Mac or PC on the same Wi-Fi)
+## Download
+
+1. Get **lafleur-music.zip** from the [latest release](https://github.com/Jonlekern/lafleurmusic/releases/latest) and unzip it.
+2. Copy the **lafleur-music** folder to `/storage/roms/` on the console (the `roms` folder of the SD card, or the `games-roms` Samba share).
+3. Copy **lafleur-music/LAFLEURMUSIC.sh** to `/storage/.config/gmu/playlists/` (the `gmu/playlists` folder of the `config` Samba share).
+4. Put your music in `/storage/roms/music`, then on the console: START > Game Settings > Update Gamelists, and **Music > LAFLEURMUSIC**.
+
+## Build and install from source (from a Mac or PC on the same Wi-Fi)
 
 1. On the console, enable **Samba** (START > Network Settings > Enable Samba).
 2. `tools/fetch-vendor.sh` downloads MPD and LÖVE from the official PortMaster releases (md5 checked).
