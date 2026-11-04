@@ -1,6 +1,6 @@
-"""Génère ui/assets/ depuis les logos LAFLEURSTUDIO (fleur), le logo texte LAFLEURMUSIC (Distancia Heavy) et les polices du thème Elementerial.
+"""Génère ui/assets/ depuis les logos LAFLEURSTUDIO (fleur), le logo texte LAFLEURMUSIC (v2, Calebard Black) et les polices du thème Elementerial.
 
-Usage : LAFLEUR_LOGOS=<dossier des logos SVG> LAFLEUR_WORDMARK_FONT=<police du logo texte> \
+Usage : LAFLEUR_LOGOS=<dossier des logos SVG> \
         LAFLEUR_INTER=<dossier des polices Inter> python -I tools/make-assets.py
 (cairosvg, Pillow ; sur macOS : DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib). Les images générées sont déjà dans ui/assets.
 """
@@ -10,22 +10,14 @@ import shutil
 from pathlib import Path
 
 import cairosvg
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 LOGOS = Path(os.environ["LAFLEUR_LOGOS"])
 FONTS = Path(os.environ["LAFLEUR_INTER"])
 OUT = ROOT / "ui/assets"
-# Police du logo (Distancia 900 Heavy), utilisée seulement pour dessiner le logo texte LAFLEURMUSIC.
-DISTANCIA = Path(os.environ["LAFLEUR_WORDMARK_FONT"])
-
-
-def wordmark(word, width):
-    font = ImageFont.truetype(str(DISTANCIA), 200)
-    box = ImageDraw.Draw(Image.new("RGBA", (1, 1))).textbbox((0, 0), word, font=font)
-    img = Image.new("RGBA", (box[2] - box[0] + 4, box[3] - box[1] + 4), (0, 0, 0, 0))
-    ImageDraw.Draw(img).text((2 - box[0], 2 - box[1]), word, font=font, fill=(255, 255, 255, 255))
-    return img.resize((width, round(width * img.height / img.width)), Image.LANCZOS)
+# Logo texte LAFLEURMUSIC v2 (Calebard Black), blanc, dans le dossier des logos.
+WORDMARK = "v2/Logo-texte-LAFLEURMUSIC-blanc-v2.svg"
 
 
 def svg(name, width):
@@ -35,8 +27,8 @@ def svg(name, width):
 
 def main():
     (OUT / "fonts").mkdir(parents=True, exist_ok=True)
-    wordmark("LAFLEURMUSIC", 250).save(OUT / "logo-texte.png")
-    wordmark("LAFLEURMUSIC", 900).save(OUT / "logo-texte-grand.png")
+    svg(WORDMARK, 250).save(OUT / "logo-texte.png")
+    svg(WORDMARK, 900).save(OUT / "logo-texte-grand.png")
     flower = svg("Logo-fleur-LAFLEURSTUDIO-rose.svg", 480)
     flower.save(OUT / "fleur.png")
     tile = Image.new("RGBA", (300, 300), (0x1A, 0x1A, 0x1A, 255))
